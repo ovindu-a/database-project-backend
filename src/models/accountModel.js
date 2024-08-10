@@ -10,9 +10,12 @@ const Account = {
     }
   },
 
-  create: async (Branch_ID, Customer_ID, Type, Balance) => {
+  create: async (Branch_ID, Customer_ID, Type, Balance, OpeningDate, Plan) => {
     try {
-      const [result] = await db.query('INSERT INTO Account (Branch_ID, Customer_ID, Type, Balance) VALUES (?, ?, ?, ?)', [Branch_ID, Customer_ID, Type, Balance]);
+      const [result] = await db.query(
+        'INSERT INTO Account (Branch_ID, Customer_ID, Type, Balance, OpeningDate, Plan) VALUES (?, ?, ?, ?, ?, ?)',
+        [Branch_ID, Customer_ID, Type, Balance, OpeningDate, Plan]
+      );
       return result.insertId;
     } catch (error) {
       throw error;
@@ -21,6 +24,7 @@ const Account = {
 
   getById: async (Account_ID) => {
     try {
+      console.log(Account_ID);
       const [rows] = await db.query('SELECT * FROM Account WHERE Account_ID = ?', [Account_ID]);
       return rows[0];
     } catch (error) {
@@ -42,6 +46,16 @@ const Account = {
     try {
       const [result] = await db.query('DELETE FROM Account WHERE Account_ID = ?', [Account_ID]);
       return result.affectedRows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // get account by customer id
+  getByCustomer: async (Customer_ID) => {
+    try {
+      const [rows] = await db.query('SELECT * FROM Account WHERE Customer_ID = ?', [Customer_ID]);
+      return rows;
     } catch (error) {
       throw error;
     }
