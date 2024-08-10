@@ -16,6 +16,14 @@ console.log("Middleware setup complete");
 const accountRoutes = require('./routes/accountRoutes');
 const branchRoutes = require('./routes/branchRoutes');
 const managerRoutes = require('./routes/managerRoutes');
+const customerRoutes = require('./routes/customerRoutes');
+const employeeRoutes = require('./routes/employeeRoutes');
+const FDRoutes = require('./routes/FDRoutes');
+const loanRoutes = require('./routes/loanRoutes');
+const transactionRoutes = require('./routes/transactionRoutes');
+const loanApplicationRoutes = require('./routes/loanApplicationRoutes');
+const loanInstallmentRoutes = require('./routes/loanInstallmentRoutes');
+const analysisRoutes = require('./routes/analysisRoutes');
 
 console.log("Routes imported");
 
@@ -23,6 +31,16 @@ console.log("Routes imported");
 app.use('/api/accounts', accountRoutes);
 app.use('/api/branches', branchRoutes);
 app.use('/api/managers', managerRoutes);
+app.use('/api/customers', customerRoutes);
+app.use('/api/employees', employeeRoutes);
+app.use('/api/fixedDeposits', FDRoutes);
+app.use('/api/loans', loanRoutes);
+app.use('/api/transactions', transactionRoutes);
+app.use('/api/loanApplications', loanApplicationRoutes);
+app.use('/api/loanInstallments', loanInstallmentRoutes);
+app.use('/api/analysis', analysisRoutes);
+
+
 
 console.log("Routes setup complete");
 
