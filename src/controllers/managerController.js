@@ -11,6 +11,7 @@ exports.getAllManagers = async (req, res) => {
 
 exports.createManager = async (req, res) => {
   try {
+    console.log("Manager is being creating.");
     const managerId = await Manager.create();
     res.status(201).json({ Manager_ID: managerId });
   } catch (error) {
