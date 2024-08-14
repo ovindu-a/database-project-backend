@@ -2,6 +2,11 @@ const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
 
+const cors = require('cors');
+
+// Use CORS middleware
+app.use(cors());
+
 console.log("Starting server setup...");
 
 // Load environment variables
@@ -46,7 +51,7 @@ console.log("Routes setup complete");
 
 // Start Server
 const start = () => {
-    const PORT = process.env.PORT || 3000;
+    const PORT = process.env.PORT || 3001;
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
     });
