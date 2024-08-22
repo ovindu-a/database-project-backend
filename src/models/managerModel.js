@@ -10,9 +10,12 @@ const Manager = {
     }
   },
 
-  create: async () => {
+  create: async (name, username, password) => {
     try {
-      const [result] = await db.query('INSERT INTO Manager () VALUES ()');
+      const [result] = await db.query(
+        'INSERT INTO Manager (Name, Username, Password) VALUES (?, ?, ?)',
+        [name, username, password]
+      );
       return result.insertId;
     } catch (error) {
       throw error;
@@ -35,7 +38,18 @@ const Manager = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  getByUsername: async (username) => {
+    console.log(username);
+    try {
+      const [rows] = await db.query('SELECT * FROM Manager WHERE Username = ?', [username]);
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
+  },
+
 };
 
 module.exports = Manager;

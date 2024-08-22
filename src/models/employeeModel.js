@@ -10,9 +10,12 @@ const Employee = {
     }
   },
 
-  create: async (Branch_ID) => {
+  create: async (Branch_ID, name, username, password) => {
     try {
-      const [result] = await db.query('INSERT INTO Employee (Branch_ID) VALUES (?)', [Branch_ID]);
+      const [result] = await db.query(
+        'INSERT INTO Employee (Branch_ID, Name, Username, Password) VALUES (?, ?, ?, ?)',
+        [Branch_ID, name, username, password]
+      );
       return result.insertId;
     } catch (error) {
       throw error;
@@ -45,7 +48,16 @@ const Employee = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  getByUsername: async (username) => {
+    try {
+      const [rows] = await db.query('SELECT * FROM Employee WHERE Username = ?', [username]);
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 module.exports = Employee;
