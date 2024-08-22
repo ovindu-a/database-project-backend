@@ -51,7 +51,26 @@ const Transaction = {
     } catch (error) {
       throw error;
     }
+  },
+
+  getBySentAccount: async (fromAccount) => {
+    try {
+      const [rows] = await db.query('SELECT * FROM Transaction WHERE FromAccount = ?', [fromAccount]);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getByReceivedAccount: async (toAccount) => {
+    try {
+      const [rows] = await db.query('SELECT * FROM Transaction WHERE ToAccount = ?', [toAccount]);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
   }
+
 };
 
 module.exports = Transaction;
