@@ -61,3 +61,37 @@ exports.deleteLoanApplication = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getAllLoanApplications = async (req, res) => {
+  try {
+    const loanApplications = await LoanApplication.getAll();
+    res.json(loanApplications);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// New method for approving a loan application
+exports.approveLoanApplication = async (req, res) => {
+  const { id } = req.params;  // Application_ID
+  const { managerId } = req.body;  // Manager_ID from the request body
+
+  try {
+    // Verify if the manager is assigned to the branch of the loan application
+    const branchAndManager = await LoanApplication.getBranchAndManager(id);
+
+    if (!branchAndManager || branchAndManager.Manager_ID !== managerId) {
+      return res.status(403).json({ message: 'Manager is not authorized to approve this loan application.' });
+    }
+
+    // Update the Approved status to true
+    const affectedRows = await LoanApplication.updateApprovalStatus(id, 'Yes');
+    if (affectedRows) {
+      res.json({ message: 'Loan application approved successfully.' });
+    } else {
+      res.status(404).json({ message: 'Loan application not found.' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

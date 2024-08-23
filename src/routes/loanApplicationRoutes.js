@@ -7,5 +7,7 @@ router.post('/', loanApplicationController.createLoanApplication);
 router.get('/:id', loanApplicationController.getLoanApplicationById);
 router.put('/:id', loanApplicationController.updateLoanApplication);
 router.delete('/:id', loanApplicationController.deleteLoanApplication);
+router.post('/:id/approve', loanApplicationController.approveLoanApplication);
+
 
 module.exports = router;

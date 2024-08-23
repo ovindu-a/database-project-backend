@@ -10,9 +10,12 @@ const Customer = {
     }
   },
 
-  create: async (Name, NIC, Address) => {
+  create: async (Name, NIC, Address, username, password) => {
     try {
-      const [result] = await db.query('INSERT INTO Customer (Name, NIC, Address) VALUES (?, ?, ?)', [Name, NIC, Address]);
+      const [result] = await db.query(
+        'INSERT INTO Customer (Name, NIC, Address, Username, Password) VALUES (?, ?, ?, ?, ?)',
+        [Name, NIC, Address, username, password]
+      );
       return result.insertId;
     } catch (error) {
       throw error;
@@ -42,6 +45,15 @@ const Customer = {
     try {
       const [result] = await db.query('DELETE FROM Customer WHERE Customer_ID = ?', [Customer_ID]);
       return result.affectedRows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getByUsername: async (username) => {
+    try {
+      const [rows] = await db.query('SELECT * FROM Customer WHERE Username = ?', [username]);
+      return rows[0];
     } catch (error) {
       throw error;
     }
