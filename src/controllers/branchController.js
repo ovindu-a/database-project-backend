@@ -70,17 +70,3 @@ exports.deleteBranch = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
-
-// exports.getBranchByManagerID = async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const branch = await Branch.getByManagerID(id);
-//     if (branch) {
-//       res.json(branch);
-//     } else {
-//       res.status(404).json({ message: 'Branch not found' });
-//     }
-//   } catch (error) {
-//     res.status(500).json({ error: error.message });
-//   }
-// }
