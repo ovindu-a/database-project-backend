@@ -21,7 +21,7 @@ const Manager = {
 
   getById: async (Manager_ID) => {
     try {
-      const [rows] = await db.query('SELECT * FROM Manager WHERE Manager_ID = ?', [Manager_ID]);
+      const [rows] = await db.query('SELECT Manager_ID,Name FROM Manager WHERE Manager_ID = ?', [Manager_ID]);
       return rows[0];
     } catch (error) {
       throw error;

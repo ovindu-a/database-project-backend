@@ -51,7 +51,51 @@ const LoanApplication = {
     } catch (error) {
       throw error;
     }
-  }
+  }, 
+
+  updateApprovalStatus: async (Application_ID, Approved) => {
+    try {
+      const [result] = await db.query(
+        'UPDATE LoanApplication SET Approved = ? WHERE Application_ID = ?',
+        [Approved, Application_ID]
+      );
+      return result.affectedRows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getBranchAndManager: async (Application_ID) => {
+    try {
+      const [rows] = await db.query(
+        `SELECT la.Branch_ID, m.Manager_ID 
+         FROM LoanApplication la 
+         JOIN Branch b ON la.Branch_ID = b.Branch_ID 
+         JOIN Manager m ON b.Manager_ID = m.Manager_ID 
+         WHERE la.Application_ID = ?`,
+        [Application_ID]
+      );
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getAllByBranchID: async (Branch_ID) => {
+    try {
+      const [rows] = await db.query('SELECT * FROM LoanApplication WHERE Branch_ID = ?', [Branch_ID]);
+      if (rows.length === 0) {
+        return { message: 'No loan applications found for this branch' };
+      }
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+
 };
+
+
 
 module.exports = LoanApplication;

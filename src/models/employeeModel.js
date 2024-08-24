@@ -21,7 +21,7 @@ const Employee = {
 
   getById: async (ID) => {
     try {
-      const [rows] = await db.query('SELECT * FROM Employee WHERE ID = ?', [ID]);
+      const [rows] = await db.query('SELECT * FROM Employee WHERE Employee_ID = ?', [ID]);
       return rows[0];
     } catch (error) {
       throw error;
@@ -40,7 +40,7 @@ const Employee = {
 
   delete: async (ID) => {
     try {
-      const [result] = await db.query('DELETE FROM Employee WHERE ID = ?', [ID]);
+      const [result] = await db.query('DELETE FROM Employee WHERE Employee_ID = ?', [ID]);
       return result.affectedRows;
     } catch (error) {
       throw error;
