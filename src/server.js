@@ -45,7 +45,7 @@ app.use('/api/loanApplications', loanApplicationRoutes);
 app.use('/api/loanInstallments', loanInstallmentRoutes);
 app.use('/api/analysis', analysisRoutes);
 
-
+   
 
 console.log("Routes setup complete");
 
