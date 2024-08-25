@@ -43,7 +43,6 @@ exports.getManagerById = async (req, res) => {
 exports.updateManagerBranchId = async (req, res) => {
   const { id } = req.params;
   const { Branch_ID } = req.body;
-  console.log(req.params);
   
   try {
     const affectedRows = await Manager.updateBranchId(id, Branch_ID);
