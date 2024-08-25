@@ -26,6 +26,7 @@ exports.createEmployee = async (req, res) => {
 
 exports.getEmployeeById = async (req, res) => {
   const { id } = req.params;
+  console.log("Requesting employee with id: ", id);
   try {
     const employee = await Employee.getById(id);
     if (employee) {
