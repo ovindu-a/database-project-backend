@@ -61,3 +61,17 @@ exports.deleteLoan = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getLoanByCustomer = async (req, res) => {
+  const { Customer_ID } = req.params;
+  try {
+    const loans = await Loan.getLoansByCustomer(Customer_ID);
+    if (loans) {
+      res.json(loans);
+    } else {
+      res.status(404).json({ message: 'No loans found for this customer' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
