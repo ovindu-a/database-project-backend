@@ -61,3 +61,17 @@ exports.deleteLoanInstallment = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getLoanInstallmentsByLoanId = async (req, res) => {
+  const { Loan_ID } = req.params;
+  try {
+    const loanInstallments = await LoanInstallments.getByLoanId(Loan_ID);
+    if (loanInstallments) {
+      res.json(loanInstallments);
+    } else {
+      res.status(404).json({ message: 'No loan installments found for this loan' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

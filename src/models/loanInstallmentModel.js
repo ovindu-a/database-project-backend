@@ -51,7 +51,16 @@ const LoanInstallments = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  getByLoanId: async (Loan_ID) => {
+    try {
+      const [rows] = await db.query('SELECT * FROM LoanInstallments WHERE Loan_ID = ?', [Loan_ID]);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 module.exports = LoanInstallments;
