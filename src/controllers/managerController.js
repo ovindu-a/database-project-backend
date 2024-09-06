@@ -1,5 +1,5 @@
 const Manager = require('../models/managerModel');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 exports.getAllManagers = async (req, res) => {
   try {
