@@ -63,9 +63,9 @@ exports.deleteLoanInstallment = async (req, res) => {
 };
 
 exports.getLoanInstallmentsByLoanId = async (req, res) => {
-  const { Loan_ID } = req.params;
+  const  Loan_ID  = req.params;
   try {
-    const loanInstallments = await LoanInstallments.getByLoanId(Loan_ID);
+    const loanInstallments = await LoanInstallments.getByLoanId(Loan_ID.id);
     if (loanInstallments) {
       res.json(loanInstallments);
     } else {

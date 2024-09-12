@@ -84,10 +84,8 @@ const LoanApplication = {
   getAllByBranchID: async (Branch_ID) => {
     try {
       const [rows] = await db.query('SELECT * FROM LoanApplication WHERE Branch_ID = ?', [Branch_ID]);
-      if (rows.length === 0) {
-        return { message: 'No loan applications found for this branch' };
-      }
-      return rows;
+      return rows ;
+      
     } catch (error) {
       throw error;
     }

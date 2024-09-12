@@ -1,4 +1,5 @@
 const Transaction = require('../models/transactionModel');
+const Branch = require('../models/branchModel');
 
 exports.getAllTransactions = async (req, res) => {
   console.log('getAllTransactions')
@@ -88,6 +89,7 @@ exports.getTransactionsByReceivedAccount = async (req, res) => {
 
 exports.getTransactionsByAccount = async (req, res) => {
   const { account } = req.params;
+  console.log('Ready to give transactions for account:', account);
 
   try {
     const fromAccountTransactions = await Transaction.getBySentAccount(account);
@@ -97,10 +99,30 @@ exports.getTransactionsByAccount = async (req, res) => {
     let combinedTransactions = [...fromAccountTransactions, ...toAccountTransactions];
 
     // Sort the combined results by Date
-    combinedTransactions.sort((a, b) => new Date(a.Date) - new Date(b.Date));
+    // combinedTransactions.sort((a, b) => new Date(a.Date) - new Date(b.Date));//
+    
 
     res.json(combinedTransactions);
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.getAllLoanApplicationsByManagerID = async (req, res) => {
+  const { id } = req.params;
+  console.log('Getting all loan applications for manager', id);
+  try {
+    const branchId = await Branch.getByManagerID(id);
+    console.log('Branch ID:', branchId);
+    if (branchId && branchId.Branch_ID) {
+      const loanApplications = await LoanApplication.getAllByBranchID(branchId.Branch_ID);
+      console.log('Loan Applications:', loanApplications);
+      res.status(200).json(loanApplications );
+    } else {
+      res.status(404).json(loanApplications);
+    }
+  } catch (error) {
+    console.error('Error fetching loan applications:', error);
+    res.status(500).json({ error: error.message, data: [] });
   }
 };

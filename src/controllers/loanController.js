@@ -63,9 +63,9 @@ exports.deleteLoan = async (req, res) => {
 };
 
 exports.getLoanByCustomer = async (req, res) => {
-  const { Customer_ID } = req.params;
+  const  Customer_ID  = req.params;
   try {
-    const loans = await Loan.getLoansByCustomer(Customer_ID);
+    const loans = await Loan.getLoansByCustomer(Customer_ID.id);
     if (loans) {
       res.json(loans);
     } else {
