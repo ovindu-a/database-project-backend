@@ -95,7 +95,7 @@ exports.loginCustomer = async (req, res) => {
     otpStorage[customer.Customer_ID] = otp; // Store OTP temporarily
 
     // Send OTP via email
-    await sendOtp(customer.Email, otp); // Use the new service to send OTP
+    sendOtp(customer.Email, otp); // Use the new service to send OTP
 
     // Send response indicating successful password validation and OTP sent
     res.status(200).json({ message: 'Success', Customer_ID: customer.Customer_ID });
@@ -113,7 +113,9 @@ exports.loginCustomer = async (req, res) => {
 
 exports.verifyOtp = (req, res) => {
   const { Customer_ID, otp } = req.body;
-
+  // console.log(req.body)
+  // console.log(otpStorage, otp, Customer_ID)
+  // console.log(otpStorage[Customer_ID] == otp)
   // Check if the OTP exists and matches
   if (otpStorage[Customer_ID] && otpStorage[Customer_ID] === otp) {
     delete otpStorage[Customer_ID]; // Clear OTP after verification
