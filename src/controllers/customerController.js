@@ -4,6 +4,7 @@ const { verifyCookie } = require('../middleware/authMiddleware'); // Update this
 const jwt = require('jsonwebtoken'); // Keep this line
 const JWT_SECRET = 'yourSecretKey'; // Keep this line
 const nodemailer = require('nodemailer'); // Add this line
+const { sendOtp, generateOtp } = require('../services/otpService'); // Update this line
 
 exports.getAllCustomers = async (req, res) => {
   try {
@@ -87,28 +88,11 @@ exports.loginCustomer = async (req, res) => {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
-    console.log(customer)
-
     // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
+    const otp = generateOtp(); // Use the new service to generate OTP
 
     // Send OTP via email
-    const transporter = nodemailer.createTransport({
-      service: 'gmail', // Use your email service
-      auth: {
-        user: 'g8database@gmail.com', // Your email
-        pass: 'axxsyuvxgpgwkydj' // Your email password
-      }
-    });
-
-    const mailOptions = {
-      from: 'g8database@gmail.com',
-      to: 'g8database@gmail.com', // Assuming customer has an Email field
-      subject: 'Your OTP Code',
-      text: `Your OTP code is ${otp}`
-    };
-
-    await transporter.sendMail(mailOptions); // Send the email
+    await sendOtp(customer.Email, otp); // Use the new service to send OTP
 
     // Generate JWT token
     const token = jwt.sign({ Customer_ID: customer.Customer_ID }, JWT_SECRET, { expiresIn: '1h' });
