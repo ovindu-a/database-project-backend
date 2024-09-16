@@ -4,6 +4,9 @@ const { verifyCookie } = require('../middleware/authMiddleware'); // Update this
 const jwt = require('jsonwebtoken'); // Keep this line
 const JWT_SECRET = 'yourSecretKey'; // Keep this line
 const nodemailer = require('nodemailer'); // Add this line
+const { sendOtp, generateOtp } = require('../services/otpService'); // Update this line
+
+let otpStorage = {};
 
 exports.getAllCustomers = async (req, res) => {
   try {
@@ -73,6 +76,7 @@ exports.deleteCustomer = async (req, res) => {
 
 exports.loginCustomer = async (req, res) => {
   const { username, password } = req.body;
+  console.log(username);
 
   try {
     const customer = await Customer.getByUsername(username);
@@ -87,35 +91,16 @@ exports.loginCustomer = async (req, res) => {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
-    console.log(customer)
-
     // Generate OTP
-    const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Generate a 6-digit OTP
+    const otp = generateOtp(); // Use the new service to generate OTP
+    otpStorage[customer.Customer_ID] = otp; // Store OTP temporarily
 
     // Send OTP via email
-    const transporter = nodemailer.createTransport({
-      service: 'gmail', // Use your email service
-      auth: {
-        user: 'g8database@gmail.com', // Your email
-        pass: 'axxsyuvxgpgwkydj' // Your email password
-      }
-    });
+    sendOtp(customer.Email, otp); // Use the new service to send OTP
 
-    const mailOptions = {
-      from: 'g8database@gmail.com',
-      to: 'g8database@gmail.com', // Assuming customer has an Email field
-      subject: 'Your OTP Code',
-      text: `Your OTP code is ${otp}`
-    };
+    // Send response indicating successful password validation and OTP sent
+    res.status(200).json({ message: 'Success', Customer_ID: customer.Customer_ID });
 
-    await transporter.sendMail(mailOptions); // Send the email
-
-    // Generate JWT token
-    const token = jwt.sign({ Customer_ID: customer.Customer_ID }, JWT_SECRET, { expiresIn: '1h' });
-
-    // Set token in cookie
-    res.cookie('token', token, { httpOnly: true, secure: false }); // Set secure to true in production
-    res.status(200).json({ message: 'Login successful, OTP sent to your email', Customer_ID: customer.Customer_ID, otp }); // Include OTP in response for testing
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -126,3 +111,23 @@ exports.loginCustomer = async (req, res) => {
 // exports.getCustomerById = verifyCookie; // Use the imported middleware
 // exports.updateCustomer = verifyCookie; // Use the imported middleware
 // exports.deleteCustomer = verifyCookie; // Use the imported middleware
+
+exports.verifyOtp = (req, res) => {
+  const { Customer_ID, otp } = req.body;
+  // console.log(req.body)
+  // console.log(otpStorage, otp, Customer_ID)
+  // console.log(otpStorage[Customer_ID] == otp)
+  // Check if the OTP exists and matches
+  if (otpStorage[Customer_ID] && otpStorage[Customer_ID] === otp) {
+    delete otpStorage[Customer_ID]; // Clear OTP after verification
+
+    // Generate JWT token
+    const token = jwt.sign({ Customer_ID }, JWT_SECRET, { expiresIn: '20s' });
+
+    // Set token in cookie
+    res.cookie('token', token, { httpOnly: true, secure: false, maxAge:20000 }); // Set secure to true in production
+    return res.status(200).json({ message: 'Login successful, OTP sent to your email', Customer_ID: Customer_ID});
+  } else {
+    return res.status(401).json({ message: 'Invalid OTP' });
+  }
+};
