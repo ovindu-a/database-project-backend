@@ -5,7 +5,10 @@ const dotenv = require('dotenv');
 const cors = require('cors');
 
 // Use CORS middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Your frontend URL
+  credentials: true // Allow credentials (cookies)
+}));
 
 console.log("Starting server setup...");
 
