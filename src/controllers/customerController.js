@@ -122,10 +122,10 @@ exports.verifyOtp = (req, res) => {
     delete otpStorage[Customer_ID]; // Clear OTP after verification
 
     // Generate JWT token
-    const token = jwt.sign({ Customer_ID }, JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign({ Customer_ID }, JWT_SECRET, { expiresIn: '20s' });
 
     // Set token in cookie
-    res.cookie('token', token, { httpOnly: true, secure: false }); // Set secure to true in production
+    res.cookie('token', token, { httpOnly: true, secure: false, maxAge:20000 }); // Set secure to true in production
     return res.status(200).json({ message: 'Login successful, OTP sent to your email', Customer_ID: Customer_ID});
   } else {
     return res.status(401).json({ message: 'Invalid OTP' });

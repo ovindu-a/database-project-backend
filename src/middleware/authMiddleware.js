@@ -19,4 +19,4 @@ const verifyCookie = (req, res, next) => {
   });
 };
 
-module.exports = { verifyCookie };
+module.exports =  {verifyCookie};
