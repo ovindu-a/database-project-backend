@@ -1,9 +1,6 @@
 const Customer = require('../models/customerModel');
 const bcrypt = require('bcryptjs');
-const { verifyCookie } = require('../middleware/authMiddleware'); // Update this line
-const jwt = require('jsonwebtoken'); // Keep this line
-const JWT_SECRET = 'yourSecretKey'; // Keep this line
-const nodemailer = require('nodemailer'); // Add this line
+const { verifyCookie, createJwtToken } = require('../middleware/authMiddleware'); // Update this line
 const { sendOtp, generateOtp } = require('../services/otpService'); // Update this line
 
 let otpStorage = {};
@@ -122,10 +119,10 @@ exports.verifyOtp = (req, res) => {
     delete otpStorage[Customer_ID]; // Clear OTP after verification
 
     // Generate JWT token
-    const token = jwt.sign({ Customer_ID }, JWT_SECRET, { expiresIn: '20s' });
+    const token = createJwtToken(req, res, Customer_ID);
 
     // Set token in cookie
-    res.cookie('token', token, { httpOnly: true, secure: false, maxAge:20000 }); // Set secure to true in production
+    res.cookie('token', token, { httpOnly: true, secure: false, maxAge:200000000 }); // Set secure to true in production
     return res.status(200).json({ message: 'Login successful, OTP sent to your email', Customer_ID: Customer_ID});
   } else {
     return res.status(401).json({ message: 'Invalid OTP' });
