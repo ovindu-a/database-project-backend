@@ -6,12 +6,12 @@ const jwt = require('jsonwebtoken');
 const verifyCookie = (req, res, next) => {
   const token = req.cookies.token; // Get token from cookies
   if (!token) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    return res.status(401).json({ message: 'Please login' });
   }
 
   jwt.verify(token, JWT_SECRET, (err, decoded) => {
     if (err) {
-      return res.status(403).json({ message: 'Invalid token' });
+      return res.status(401).json({ message: 'Your session has expired. Please login again' });
     }
     req.customerId = decoded.Customer_ID;
     console.log(req)
