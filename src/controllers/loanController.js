@@ -1,3 +1,4 @@
+const Branch = require('../models/branchModel');
 const Loan = require('../models/loanModel');
 
 exports.getAllLoans = async (req, res) => {
@@ -75,3 +76,5 @@ exports.getLoanByCustomer = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+

@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { getByLoanId } = require('./loanInstallmentModel');
 
 const Customer = {
   getAll: async () => {
@@ -57,7 +58,17 @@ const Customer = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  getByLoanId: async (Loan_ID) => {
+    try {
+      const [Customer_ID] = await db.query('SELECT Customer_ID FROM Loan WHERE Loan_ID = ?', [Loan_ID]);
+      const [rows] = await db.query('SELECT Customer_ID,Name FROM Customer WHERE Customer_ID = ?', [Customer_ID[0].Customer_ID]);
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
+  },
 };
 
 module.exports = Customer;

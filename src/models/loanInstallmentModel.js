@@ -61,6 +61,15 @@ const LoanInstallments = {
       throw error;
     }
   },
+
+  getLate: async (Branch_ID) => {
+    try {
+      const [rows] = await db.query('SELECT * FROM LoanInstallments WHERE Branch_ID = ? AND Transaction_ID IS NULL AND DueDate< CURDATE()', [Branch_ID]);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 module.exports = LoanInstallments;

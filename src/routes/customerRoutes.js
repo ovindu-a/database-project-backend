@@ -9,6 +9,8 @@ router.get('/:id', verifyCookie, customerController.getCustomerById); // Use the
 router.put('/:id', verifyCookie, customerController.updateCustomer); // Protect this route as well
 router.delete('/:id', verifyCookie, customerController.deleteCustomer); // Protect this route as well
 router.post('/login', customerController.loginCustomer);
-router.post('/verify-otp', customerController.verifyOtp);
+router.post('/verify-otp', customerController.verifyOtp); // Add this line
+router.get('/by-loan/:id', customerController.getCustomerByLoanId);
+
 
 module.exports = router;
