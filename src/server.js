@@ -46,7 +46,7 @@ app.use('/api/customers', customerRoutes);
 app.use('/api/employees', employeeRoutes);
 app.use('/api/fixedDeposits',verifyCookie, FDRoutes);
 app.use('/api/loans', loanRoutes);
-app.use('/api/transactions',verifyCookie, transactionRoutes);
+app.use('/api/transactions', transactionRoutes);
 app.use('/api/loanApplications',verifyCookie, loanApplicationRoutes);
 app.use('/api/loanInstallments', loanInstallmentRoutes);
 app.use('/api/analysis',verifyCookie, analysisRoutes);

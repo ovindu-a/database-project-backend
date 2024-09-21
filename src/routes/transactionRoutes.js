@@ -10,6 +10,8 @@ router.delete('/:id', transactionController.deleteTransaction);
 router.get('/fromAccount/:account', transactionController.getTransactionsBySentAccount);
 router.get('/toAccount/:account', transactionController.getTransactionsByReceivedAccount);
 router.get('/byAccount/:account', transactionController.getTransactionsByAccount);
+router.post('/outgoingReport/:id', transactionController.getOutgoingReport);
+router.post('/incomingReport/:id', transactionController.getIncomingReport);
 
 module.exports = router;
 
