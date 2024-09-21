@@ -9,5 +9,6 @@ router.put('/:id', customerController.updateCustomer);
 router.delete('/:id', customerController.deleteCustomer);
 router.post('/login', customerController.loginCustomer);
 router.post('/verify-otp', customerController.verifyOtp); // Add this line
+router.get('/by-loan/:id', customerController.getCustomerByLoanId);
 
 module.exports = router;

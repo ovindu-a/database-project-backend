@@ -41,14 +41,14 @@ console.log("Routes imported");
 // Use routes
 app.use('/api/accounts',verifyCookie, accountRoutes);
 app.use('/api/branches',verifyCookie, branchRoutes);
-app.use('/api/managers',verifyCookie, managerRoutes);
+app.use('/api/managers', managerRoutes);
 app.use('/api/customers', customerRoutes);
-app.use('/api/employees',verifyCookie, employeeRoutes);
+app.use('/api/employees', employeeRoutes);
 app.use('/api/fixedDeposits',verifyCookie, FDRoutes);
 app.use('/api/loans',verifyCookie, loanRoutes);
 app.use('/api/transactions',verifyCookie, transactionRoutes);
 app.use('/api/loanApplications',verifyCookie, loanApplicationRoutes);
-app.use('/api/loanInstallments',verifyCookie, loanInstallmentRoutes);
+app.use('/api/loanInstallments', loanInstallmentRoutes);
 app.use('/api/analysis',verifyCookie, analysisRoutes);
 
    

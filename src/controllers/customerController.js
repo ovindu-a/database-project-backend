@@ -1,4 +1,5 @@
 const Customer = require('../models/customerModel');
+const Loan = require('../models/loanModel');
 const bcrypt = require('bcryptjs');
 const { verifyCookie } = require('../middleware/authMiddleware'); // Update this line
 const jwt = require('jsonwebtoken'); // Keep this line
@@ -96,7 +97,7 @@ exports.loginCustomer = async (req, res) => {
     otpStorage[customer.Customer_ID] = otp; // Store OTP temporarily
 
     // Send OTP via email
-    sendOtp(customer.Email, otp); // Use the new service to send OTP
+    sendOtp(customer.Email, otp); // Use the service to send OTP
 
     // Send response indicating successful password validation and OTP sent
     res.status(200).json({ message: 'Success', Customer_ID: customer.Customer_ID });
@@ -122,12 +123,36 @@ exports.verifyOtp = (req, res) => {
     delete otpStorage[Customer_ID]; // Clear OTP after verification
 
     // Generate JWT token
-    const token = jwt.sign({ Customer_ID }, JWT_SECRET, { expiresIn: '20s' });
+    const token = jwt.sign({ Customer_ID }, JWT_SECRET, { expiresIn: '3600s' });
 
     // Set token in cookie
-    res.cookie('token', token, { httpOnly: true, secure: false, maxAge:20000 }); // Set secure to true in production
+    res.cookie('token', token, { httpOnly: true, secure: false, maxAge:3600000 }); // Set secure to true in production
     return res.status(200).json({ message: 'Login successful, OTP sent to your email', Customer_ID: Customer_ID});
   } else {
     return res.status(401).json({ message: 'Invalid OTP' });
   }
 };
+
+exports.getCustomerByLoanId = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const customer = await Customer.getByLoanId(id);
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+
+    const loan = await Loan.getById(id);
+    if (!loan) {
+      return res.status(404).json({ message: 'Loan not found' });
+    }
+
+    const combinedData = {
+      ...customer,
+      loan
+    };
+
+    return res.json(combinedData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
