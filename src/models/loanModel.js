@@ -67,6 +67,45 @@ const Loan = {
       throw error;
     }
   },
+
+  getLoansConnectedToFD: async () => {
+    const query = `
+      SELECT 
+          l.Loan_ID, 
+          l.Branch_ID, 
+          l.Customer_ID, 
+          l.LoanPeriod, 
+          l.InterestRate, 
+          l.Date AS LoanDate, 
+          l.LoanValue, 
+          la.Application_ID, 
+          la.LoanType, 
+          f.FD_ID, 
+          f.Branch_ID AS FD_Branch_ID, 
+          f.Account_ID, 
+          f.Period AS FD_Period, 
+          f.StartDate AS FD_StartDate, 
+          f.InitialAmount AS FD_InitialAmount
+      FROM 
+          Loan l
+      JOIN 
+          LoanApplication la ON l.Application_ID = la.Application_ID
+      JOIN 
+          Online_loan_to_FD olf ON la.Application_ID = olf.Application_ID
+      JOIN 
+          FD f ON olf.FD_ID = f.FD_ID
+      WHERE 
+          la.LoanType = 'Online';
+    `;
+  
+    try {
+      const [rows] = await db.query(query);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  }
 };
+
 
 module.exports = Loan;
