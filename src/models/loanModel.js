@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const LoanInstallments = require('./loanInstallmentModel'); // Import LoanInstallments model
 
 const Loan = {
   getAll: async () => {
@@ -16,7 +17,12 @@ const Loan = {
         'INSERT INTO Loan (Branch_ID, Customer_ID, LoanPeriod, InterestRate, Date, LoanValue, Application_ID) VALUES (?, ?, ?, ?, ?, ?, ?)',
         [Branch_ID, Customer_ID, LoanPeriod, InterestRate, Date, LoanValue, Application_ID]
       );
-      return result.insertId;
+      const loanId = result.insertId;
+
+      // Create loan installments after loan creation
+      await LoanInstallments.createLoanInstallmentsSet(loanId, Branch_ID, LoanPeriod, InterestRate, LoanValue, Date);
+
+      return loanId;
     } catch (error) {
       throw error;
     }
