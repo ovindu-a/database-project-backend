@@ -110,8 +110,8 @@ exports.approveLoanApplication = async (req, res) => {
       return res.status(403).json({ message: 'Manager is not authorized to approve this loan application.' });
     }
 
-    // Update the Approved status to 1 (approved)
-    const affectedRows = await LoanApplication.updateApprovalStatus(id, 1); // Set to 1 for approved
+    // Update the Approved status to true
+    const affectedRows = await LoanApplication.updateApprovalStatus(id, 1);
     if (affectedRows) {
       // Create the loan after approval
       const loanDate = new Date(); // Set the loan creation date to today
