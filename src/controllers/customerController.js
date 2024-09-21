@@ -132,7 +132,7 @@ exports.verifyOtp = (req, res) => {
     return res.status(401).json({ message: 'Invalid OTP' });
   }
 };
-
+ 
 exports.getCustomerByLoanId = async (req, res) => {
   const { id } = req.params;
   try {
