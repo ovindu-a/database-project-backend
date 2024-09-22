@@ -5,7 +5,7 @@ const { verifyCookie } = require('../middleware/authMiddleware'); // Import the 
 
 router.get('/', customerController.getAllCustomers);
 router.post('/', customerController.createCustomer);
-router.get('/:id', verifyCookie, customerController.getCustomerById); // Use the middleware here
+router.get('/:id', customerController.getCustomerById); // Use the middleware here
 router.put('/:id', verifyCookie, customerController.updateCustomer); // Protect this route as well
 router.delete('/:id', verifyCookie, customerController.deleteCustomer); // Protect this route as well
 router.post('/login', customerController.loginCustomer);
