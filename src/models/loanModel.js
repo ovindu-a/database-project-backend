@@ -1,6 +1,8 @@
 const db = require('../config/db');
 const LoanInstallments = require('./loanInstallmentModel'); // Import LoanInstallments model
 const LoanApplication = require('./loanApplicationModel'); // Import LoanApplication model
+const FD = require('./fdModel'); // Import FD model
+const OnlineLoanToFD = require('./onlineLoanToFDModel'); // Import OnlineLoanToFD model
 
 const Loan = {
   getAll: async () => {
@@ -174,11 +176,13 @@ const Loan = {
     }
   },
 
-  createQuickLoan: async (Branch_ID, Customer_ID, LoanPeriod, InterestRate, Date, LoanValue, FD_ID) => {
+  createQuickLoan: async (Branch_ID, Customer_ID, LoanPeriod, InterestRate, StartDate, LoanValue, FD_ID) => {
     try {
       // Get the total loan value already taken against the specified FD
-      const existingLoans = await this.getTotalLoanValueByFD(FD_ID);
-      const fdDetails = await this.getFDLoanDetails(FD_ID); // Assuming this method exists to get FD details
+      // console.log(FD_ID)
+      const existingLoans = await Loan.getTotalLoanValueByFD(FD_ID);
+      const fdDetails = await FD.getById(FD_ID); // Assuming this method exists to get FD details
+      // console.log(fdDetails)
       const maxLoanValue = fdDetails.InitialAmount * 0.6; // 60% of FD amount
 
       // Check if the requested loan value exceeds the allowed limit
@@ -186,18 +190,21 @@ const Loan = {
         throw new Error(`Requested loan value exceeds the maximum allowed limit of ${maxLoanValue}.`);
       }
 
-      const loanApplicationId = await LoanApplication.create(Branch_ID, Customer_ID, LoanPeriod, Date, LoanValue, true, 'Quick'); // Adjust parameters as needed
+      const loanApplicationId = await LoanApplication.create(Branch_ID, Customer_ID, LoanPeriod, StartDate, LoanValue, 1, 'Online'); // Adjust parameters as needed
       var loanId;
+      console.log(loanApplicationId)
       const affectedRows = await LoanApplication.updateApprovalStatus(loanApplicationId, 1);
       if (affectedRows) {
         // Create the loan after approval
         const loanDate = new Date(); // Set the loan creation date to today
-        loanId = await Loan.create(Branch_ID, Customer_ID, LoanPeriod, InterestRate, loanDate, LoanValue, id); // Create the loan
+        loanId = await Loan.create(Branch_ID, Customer_ID, LoanPeriod, InterestRate, loanDate, LoanValue, loanApplicationId); // Create the loan
+        await OnlineLoanToFD.create(loanApplicationId, FD_ID); 
       }
 
 
       return loanId;
     } catch (error) {
+      console.log(error)
       throw error;
     }
   },
