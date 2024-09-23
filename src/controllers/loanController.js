@@ -77,4 +77,23 @@ exports.getLoanByCustomer = async (req, res) => {
   }
 };
 
+exports.getTotalLoanValueConnectedToFD = async (req, res) => {
+  try {
+    const totalLoanValue = await Loan.getTotalLoanValueConnectedToFD();
+    res.json({ TotalLoanValue: totalLoanValue });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+exports.createQuickLoan = async (req, res) => {
+  const { Branch_ID, Customer_ID, LoanPeriod, InterestRate, Date, LoanValue, FD_ID } = req.body;
+  try {
+    const loanId = await Loan.createQuickLoan(Branch_ID, Customer_ID, LoanPeriod, InterestRate, Date, LoanValue, FD_ID);
+    res.status(201).json({ Loan_ID: loanId, Branch_ID, Customer_ID, LoanPeriod, InterestRate, Date, LoanValue, FD_ID });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
 

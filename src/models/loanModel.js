@@ -1,5 +1,8 @@
 const db = require('../config/db');
 const LoanInstallments = require('./loanInstallmentModel'); // Import LoanInstallments model
+const LoanApplication = require('./loanApplicationModel'); // Import LoanApplication model
+const FD = require('./fdModel'); // Import FD model
+const OnlineLoanToFD = require('./onlineLoanToFDModel'); // Import OnlineLoanToFD model
 
 const Loan = {
   getAll: async () => {
@@ -104,7 +107,107 @@ const Loan = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+  getTotalLoanValueConnectedToFD: async () => {
+    const query = `
+      SELECT 
+          SUM(l.LoanValue) AS TotalLoanValue
+      FROM 
+          Loan l
+      JOIN 
+          LoanApplication la ON l.Application_ID = la.Application_ID
+      JOIN 
+          Online_loan_to_FD olf ON la.Application_ID = olf.Application_ID
+      JOIN 
+          FD f ON olf.FD_ID = f.FD_ID
+      WHERE 
+          la.LoanType = 'Online';
+    `;
+
+    try {
+      const [rows] = await db.query(query);
+      return rows[0].TotalLoanValue || 0; // Return 0 if no loans are found
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getTotalLoanValueByFD: async (FD_ID) => {
+    const query = `
+      SELECT 
+          SUM(l.LoanValue) AS TotalLoanValue
+      FROM 
+          Loan l
+      JOIN 
+          LoanApplication la ON l.Application_ID = la.Application_ID
+      JOIN 
+          Online_loan_to_FD olf ON la.Application_ID = olf.Application_ID
+      WHERE 
+          olf.FD_ID = ? AND la.LoanType = 'Online';
+    `;
+
+    try {
+      const [rows] = await db.query(query, [FD_ID]);
+      return rows[0].TotalLoanValue || 0; // Return 0 if no loans are found
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  getFDLoanDetails: async (FD_ID) => {
+    const query = `
+      SELECT 
+          f.InitialAmount,
+          COALESCE(SUM(l.LoanValue), 0) AS TotalLoansAgainstFD
+      FROM 
+          FD f
+      LEFT JOIN 
+          Loan l ON f.FD_ID = l.FD_ID
+      WHERE 
+          f.FD_ID = ?;
+    `;
+
+    try {
+      const [rows] = await db.query(query, [FD_ID]);
+      return rows[0]; // Return the FD details along with total loans against it
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  createQuickLoan: async (Branch_ID, Customer_ID, LoanPeriod, InterestRate, StartDate, LoanValue, FD_ID) => {
+    try {
+      // Get the total loan value already taken against the specified FD
+      // console.log(FD_ID)
+      const existingLoans = await Loan.getTotalLoanValueByFD(FD_ID);
+      const fdDetails = await FD.getById(FD_ID); // Assuming this method exists to get FD details
+      // console.log(fdDetails)
+      const maxLoanValue = fdDetails.InitialAmount * 0.6; // 60% of FD amount
+
+      // Check if the requested loan value exceeds the allowed limit
+      if (existingLoans + LoanValue > maxLoanValue) {
+        throw new Error(`Requested loan value exceeds the maximum allowed limit of ${maxLoanValue}.`);
+      }
+
+      const loanApplicationId = await LoanApplication.create(Branch_ID, Customer_ID, LoanPeriod, StartDate, LoanValue, 1, 'Online'); // Adjust parameters as needed
+      var loanId;
+      console.log(loanApplicationId)
+      const affectedRows = await LoanApplication.updateApprovalStatus(loanApplicationId, 1);
+      if (affectedRows) {
+        // Create the loan after approval
+        const loanDate = new Date(); // Set the loan creation date to today
+        loanId = await Loan.create(Branch_ID, Customer_ID, LoanPeriod, InterestRate, loanDate, LoanValue, loanApplicationId); // Create the loan
+        await OnlineLoanToFD.create(loanApplicationId, FD_ID); 
+      }
+
+
+      return loanId;
+    } catch (error) {
+      console.log(error)
+      throw error;
+    }
+  },
 };
 
 
