@@ -93,6 +93,19 @@ exports.getAllLoanApplicationsByManagerID = async (req, res) => {
   }
 };
 
+exports.getPendingLoanApplicationsByCustomerID = async (req, res) => {
+  const { id } = req.params;
+  console.log('Getting all pending loan applications for customer', id);
+  try {
+    const loanApplications = await LoanApplication.getPendingByCustomerID(id);
+    console.log('Loan Applications:', loanApplications);
+    res.status(200).json(loanApplications);
+  } catch (error) {
+    console.error('Error fetching loan applications:', error);
+    res.status(500).json({ error: error.message, data: [] });
+  }
+}
+
 
 
 // New method for approving a loan application
@@ -111,7 +124,7 @@ exports.approveLoanApplication = async (req, res) => {
     }
 
     // Update the Approved status to true
-    const affectedRows = await LoanApplication.updateApprovalStatus(id, 1);
+    const affectedRows = await LoanApplication.updateApprovalStatus(id, Approved);
     if (affectedRows) {
       // Create the loan after approval
       const loanDate = new Date(); // Set the loan creation date to today
@@ -123,5 +136,6 @@ exports.approveLoanApplication = async (req, res) => {
     }
   } catch (error) {
     res.status(500).json({ error: error.message });
+    console.error('Error approving loan application:', error);
   }
 };
