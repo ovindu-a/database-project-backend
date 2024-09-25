@@ -7,5 +7,6 @@ router.post('/', fdController.createFD);
 router.get('/:id', fdController.getFDById);
 router.put('/:id', fdController.updateFD);
 router.delete('/:id', fdController.deleteFD);
+router.get('/customer/:customerId', fdController.getFDsByCustomerId);
 
 module.exports = router;
