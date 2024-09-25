@@ -1,6 +1,7 @@
 const LoanApplication = require('../models/loanApplicationModel');
 const Branch = require('../models/branchModel');
 const Loan = require('../models/loanModel'); // Import the Loan model
+const { application } = require('express');
 
 
 exports.getAllLoanApplications = async (req, res) => {
@@ -82,7 +83,7 @@ exports.getAllLoanApplicationsByManagerID = async (req, res) => {
     console.log('Branch ID:', branchId);
     if (branchId && branchId.Branch_ID) {
       const loanApplications = await LoanApplication.getAllByBranchID(branchId.Branch_ID);
-      console.log('Loan Applications:', loanApplications);
+      // console.log('Loan Applications:', loanApplications);
       res.status(200).json(loanApplications );
     } else {
       res.status(404).json(loanApplications);
@@ -110,12 +111,19 @@ exports.approveLoanApplication = async (req, res) => {
       return res.status(403).json({ message: 'Manager is not authorized to approve this loan application.' });
     }
 
+    const application = await LoanApplication.getById(id);
+
+    if (!application) {
+      return res.status(404).json({ message: 'Loan application not found.' });
+    }
+    console.log('Application:', application);
+
     // Update the Approved status to true
     const affectedRows = await LoanApplication.updateApprovalStatus(id, 1);
     if (affectedRows) {
       // Create the loan after approval
       const loanDate = new Date(); // Set the loan creation date to today
-      const loanId = await Loan.create(Branch_ID, Customer_ID, LoanPeriod, InterestRate, loanDate, LoanValue, id); // Create the loan
+      const loanId = await Loan.create(application.Branch_ID, application.Customer_ID, application.LoanPeriod, 10, loanDate, application.LoanValue, id); // Create the loan
 
       return res.status(201).json({ message: 'Loan application approved successfully and loan created.', Loan_ID: loanId });
     } else {
