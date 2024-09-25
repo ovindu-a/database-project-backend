@@ -3,6 +3,7 @@ const LoanInstallments = require('./loanInstallmentModel'); // Import LoanInstal
 const LoanApplication = require('./loanApplicationModel'); // Import LoanApplication model
 const FD = require('./FDModel'); // Import FD model
 const OnlineLoanToFD = require('./onlineLoanToFDModel'); // Import OnlineLoanToFD model
+const { start } = require('../server');
 
 const Loan = {
   getAll: async () => {
@@ -180,6 +181,7 @@ const Loan = {
     try {
       // Get the total loan value already taken against the specified FD
       // console.log(FD_ID)
+      StartDate = new Date(StartDate);
       const existingLoans = await Loan.getTotalLoanValueByFD(FD_ID);
       const fdDetails = await FD.getById(FD_ID); // Assuming this method exists to get FD details
       // console.log(fdDetails)
