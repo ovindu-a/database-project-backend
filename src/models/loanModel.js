@@ -1,7 +1,7 @@
 const db = require('../config/db');
 const LoanInstallments = require('./loanInstallmentModel'); // Import LoanInstallments model
 const LoanApplication = require('./loanApplicationModel'); // Import LoanApplication model
-const FD = require('./fdModel'); // Import FD model
+const FD = require('./FDModel'); // Import FD model
 const OnlineLoanToFD = require('./onlineLoanToFDModel'); // Import OnlineLoanToFD model
 
 const Loan = {
