@@ -1,8 +1,10 @@
 const Customer = require('../models/customerModel');
+const Loan = require('../models/loanModel');
 const bcrypt = require('bcryptjs');
-const { verifyCookie } = require('../middleware/authMiddleware'); // Update this line
-const jwt = require('jsonwebtoken'); // Keep this line
-const JWT_SECRET = 'yourSecretKey'; // Keep this line
+const { verifyCookie, createJwtToken } = require('../middleware/authMiddleware'); // Update this line
+const { sendOtp, generateOtp } = require('../services/otpService'); // Update this line
+
+let otpStorage = {};
 
 exports.getAllCustomers = async (req, res) => {
   try {
@@ -72,6 +74,7 @@ exports.deleteCustomer = async (req, res) => {
 
 exports.loginCustomer = async (req, res) => {
   const { username, password } = req.body;
+  console.log(username);
 
   try {
     const customer = await Customer.getByUsername(username);
@@ -86,13 +89,16 @@ exports.loginCustomer = async (req, res) => {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
-    // Generate JWT token
-    const token = jwt.sign({ Customer_ID: customer.Customer_ID }, JWT_SECRET, { expiresIn: '1h' });
+    // Generate OTP
+    const otp = generateOtp(); // Use the new service to generate OTP
+    otpStorage[customer.Customer_ID] = otp; // Store OTP temporarily
 
-    // Set token in cookie
-    res.cookie('token', token, { httpOnly: true, secure: false }); // Set secure to true in production
-    res.status(200).json({ message: 'Login successful', Customer_ID: customer.Customer_ID  });
-    // res.status(200).json({ message: 'Login successful', Customer_ID: customer.Customer_ID });
+    // Send OTP via email
+    sendOtp(customer.Email, otp); // Use the service to send OTP
+
+    // Send response indicating successful password validation and OTP sent
+    res.status(200).json({ message: 'Success', Customer_ID: customer.Customer_ID });
+
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -103,3 +109,49 @@ exports.loginCustomer = async (req, res) => {
 // exports.getCustomerById = verifyCookie; // Use the imported middleware
 // exports.updateCustomer = verifyCookie; // Use the imported middleware
 // exports.deleteCustomer = verifyCookie; // Use the imported middleware
+
+exports.verifyOtp = (req, res) => {
+  const { Customer_ID, otp } = req.body;
+  // console.log(req.body)
+  // console.log(otpStorage, otp, Customer_ID)
+  // console.log(otpStorage[Customer_ID] == otp)
+  // Check if the OTP exists and matches
+  if (otpStorage[Customer_ID] && otpStorage[Customer_ID] === otp) {
+    delete otpStorage[Customer_ID]; // Clear OTP after verification
+
+    // Generate JWT token
+
+    const token = createJwtToken(req, res, Customer_ID);
+
+    // Set token in cookie
+    res.cookie('token', token, { httpOnly: true, secure: false, maxAge:200000000 }); // Set secure to true in production
+
+    return res.status(200).json({ message: 'Login successful, OTP sent to your email', Customer_ID: Customer_ID});
+  } else {
+    return res.status(401).json({ message: 'Invalid OTP' });
+  }
+};
+ 
+exports.getCustomerByLoanId = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const customer = await Customer.getByLoanId(id);
+    if (!customer) {
+      return res.status(404).json({ message: 'Customer not found' });
+    }
+
+    const loan = await Loan.getById(id);
+    if (!loan) {
+      return res.status(404).json({ message: 'Loan not found' });
+    }
+
+    const combinedData = {
+      ...customer,
+      loan
+    };
+
+    return res.json(combinedData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}

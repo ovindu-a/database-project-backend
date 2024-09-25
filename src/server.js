@@ -1,11 +1,16 @@
 const express = require('express');
 const app = express();
 const dotenv = require('dotenv');
+const cookieParser = require('cookie-parser');
 
 const cors = require('cors');
+const {verifyCookie} = require('./middleware/authMiddleware');
 
 // Use CORS middleware
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000', // Your frontend URL
+  credentials: true // Allow credentials (cookies)
+}));
 
 console.log("Starting server setup...");
 
@@ -15,6 +20,7 @@ console.log("Environment variables loaded");
 
 // Middleware
 app.use(express.json());
+app.use(cookieParser());
 console.log("Middleware setup complete");
 
 // Import routes
@@ -43,7 +49,7 @@ app.use('/api/loans', loanRoutes);
 app.use('/api/transactions', transactionRoutes);
 app.use('/api/loanApplications', loanApplicationRoutes);
 app.use('/api/loanInstallments', loanInstallmentRoutes);
-app.use('/api/analysis', analysisRoutes);
+app.use('/api/analysis',verifyCookie, analysisRoutes);
 
    
 

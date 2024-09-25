@@ -11,6 +11,8 @@ const LoanApplication = {
   },
 
   create: async (Branch_ID, Customer_ID, LoanPeriod, Date, LoanValue, Approved, LoanType) => {
+    // Approved = '1'
+    console.log(Approved)
     try {
       const [result] = await db.query(
         'INSERT INTO LoanApplication (Branch_ID, Customer_ID, LoanPeriod, Date, LoanValue, Approved, LoanType) VALUES (?, ?, ?, ?, ?, ?, ?)',
