@@ -124,7 +124,7 @@ exports.approveLoanApplication = async (req, res) => {
     }
 
     // Update the Approved status to true
-    const affectedRows = await LoanApplication.updateApprovalStatus(id, Approved);
+    const affectedRows = await LoanApplication.updateApprovalStatus(id, 1);
     if (affectedRows) {
       // Create the loan after approval
       const loanDate = new Date(); // Set the loan creation date to today

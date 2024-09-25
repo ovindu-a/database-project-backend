@@ -51,6 +51,21 @@ const FD = {
     } catch (error) {
       throw error;
     }
+  },
+
+  getFDsByCustomerId: async (Customer_ID) => {
+    try {
+      const query = `
+        SELECT fd.*
+        FROM FD fd
+        JOIN Account a ON fd.Account_ID = a.Account_ID
+        WHERE a.Customer_ID = ?
+      `;
+      const [rows] = await db.query(query, [Customer_ID]);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

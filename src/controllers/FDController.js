@@ -61,3 +61,18 @@ exports.deleteFD = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 };
+
+exports.getFDsByCustomerId = async (req, res) => {
+  const { customerId } = req.params;
+
+  try {
+    const fds = await FD.getFDsByCustomerId(customerId);
+    if (fds.length > 0) {
+      res.json(fds);
+    } else {
+      res.status(404).json({ message: 'No Fixed Deposits found for this customer.' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
