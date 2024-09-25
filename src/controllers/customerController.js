@@ -1,7 +1,7 @@
 const Customer = require('../models/customerModel');
 const Loan = require('../models/loanModel');
 const bcrypt = require('bcryptjs');
-const { verifyCookie, createJwtToken } = require('../middleware/authMiddleware'); // Update this line
+const { createJwtToken } = require('../middleware/authMiddleware'); // Update this line
 const { sendOtp, generateOtp } = require('../services/otpService'); // Update this line
 
 let otpStorage = {};
