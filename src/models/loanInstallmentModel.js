@@ -108,6 +108,44 @@ const LoanInstallments = {
     } catch (error) {
       throw error;
     }
+  },
+
+  makePayment: async (Installment_ID, Account_ID, Amount) => {
+    try {
+      // First, check if the installment exists
+      const [installment] = await db.query(
+        'SELECT * FROM LoanInstallments WHERE Installment_ID = ?',
+        [Installment_ID]
+      );
+
+      // If installment not found, throw an error
+      if (installment.length === 0) {
+        throw new Error('Installment not found.');
+      }
+
+      // Check if the installment is already paid (Transaction_ID is not NULL)
+      if (installment[0].Transaction_ID !== null) {
+        throw new Error('Installment already paid.');
+      }
+
+      // Insert the transaction record for the payment
+      const [transaction] = await db.query(
+        'INSERT INTO Transaction (FromAccount, ToAccount, Date, Value, Type) VALUES (?, 1, NOW(), ?, "Loan Payment")',
+        [Account_ID, installment[0].Loan_ID, Amount]
+      );
+
+      const Transaction_ID = transaction.insertId;
+
+      // Update the installment to set the Transaction_ID
+      const [result] = await db.query(
+        'UPDATE LoanInstallments SET Transaction_ID = ? WHERE Installment_ID = ?',
+        [Transaction_ID, Installment_ID]
+      );
+
+      return result.affectedRows;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

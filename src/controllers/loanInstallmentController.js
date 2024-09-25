@@ -96,3 +96,28 @@ exports.getLateLoans = async (req, res) => {
     return res.status(500).json({ error: error.message });
   }
 }
+
+exports.makeInstallmentPayment = async (req, res) => {
+  const { installmentId } = req.params;
+  const { accountId, amount } = req.body;
+
+  try {
+    const affectedRows = await LoanInstallments.makePayment(installmentId, accountId, amount);
+    if (affectedRows) {
+      res.json({ message: 'Installment payment made successfully.' });
+    } else {
+      res.status(404).json({ message: 'Installment not found or payment failed.' });
+    }
+  } catch (error) {
+    // Check the error message and respond accordingly
+    if (error.message === 'Installment not found.') {
+      res.status(404).json({ error: 'Installment not found.' });
+    } else if (error.message === 'Installment already paid.') {
+      res.status(400).json({ error: 'Installment already paid.' });
+    } else {
+      res.status(500).json({ error: error.message });
+    }
+  }
+};
+
+
