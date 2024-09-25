@@ -97,7 +97,7 @@ exports.loginCustomer = async (req, res) => {
     sendOtp(customer.Email, otp); // Use the service to send OTP
 
     // Send response indicating successful password validation and OTP sent
-    res.status(200).json({ message: 'Success', Customer_ID: customer.Customer_ID });
+    res.status(200).json({ message: 'OTP sent to your email', Customer_ID: customer.Customer_ID });
 
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -126,7 +126,7 @@ exports.verifyOtp = (req, res) => {
     // Set token in cookie
     res.cookie('token', token, { httpOnly: true, secure: false, maxAge:200000000 }); // Set secure to true in production
 
-    return res.status(200).json({ message: 'Login successful, OTP sent to your email', Customer_ID: Customer_ID});
+    return res.status(200).json({ message: 'OTP verified successfully, you are logged in.', Customer_ID: Customer_ID});
   } else {
     return res.status(401).json({ message: 'Invalid OTP' });
   }

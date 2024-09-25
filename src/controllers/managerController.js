@@ -1,5 +1,8 @@
 const Manager = require('../models/managerModel');
 const bcrypt = require('bcryptjs');
+const { sendOtp, generateOtp } = require('../services/otpService'); // Import OTP service
+const { createJwtToken } = require('../middleware/authMiddleware'); // Import JWT creation function
+let otpStorage = {}; // Temporary storage for OTPs
 
 exports.getAllManagers = async (req, res) => {
   try {
@@ -78,7 +81,7 @@ exports.loginManager = async (req, res) => {
     const manager = await Manager.getByUsername(username);
     
     if (!manager) {
-      return res.status(404).json({ message: 'Ovindu not found' });
+      return res.status(404).json({ message: 'Manager not found' });
     }
 
     // Compare the provided password with the stored hashed password
@@ -88,9 +91,33 @@ exports.loginManager = async (req, res) => {
       return res.status(401).json({ message: 'Invalid username or password' });
     }
 
-    // Authentication successful
-    res.status(200).json({ message: 'Login successful', Manager_ID: manager.Manager_ID });
+    // Generate OTP
+    const otp = generateOtp();
+    otpStorage[manager.Manager_ID] = otp; // Store OTP temporarily
+    sendOtp(manager.Email, otp); // Send OTP to manager's email
+
+    // Send response indicating successful password validation and OTP sent
+    res.status(200).json({ message: 'Success', Manager_ID: manager.Manager_ID });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.verifyOtp = (req, res) => {
+  const { Manager_ID, otp } = req.body;
+
+  // Check if the OTP exists and matches
+  if (otpStorage[Manager_ID] && otpStorage[Manager_ID] === otp) {
+    delete otpStorage[Manager_ID]; // Clear OTP after verification
+
+    // Generate JWT token
+    const token = createJwtToken(req, res, Manager_ID ); // Create a token with the manager's ID
+
+    // Set token in cookie
+    res.cookie('token', token, { httpOnly: true, secure: false, maxAge: 3600000 }); // Set secure to true in production
+
+    return res.status(200).json({ message: 'OTP verified successfully, you are logged in.' , Manager_ID: Manager_ID });
+  } else {
+    return res.status(401).json({ message: 'Invalid OTP' });
   }
 };

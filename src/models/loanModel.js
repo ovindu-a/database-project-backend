@@ -210,5 +210,4 @@ const Loan = {
   },
 };
 
-
 module.exports = Loan;
