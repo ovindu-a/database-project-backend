@@ -3,7 +3,6 @@ const LoanInstallments = require('./loanInstallmentModel'); // Import LoanInstal
 const LoanApplication = require('./loanApplicationModel'); // Import LoanApplication model
 const FD = require('./FDModel'); // Import FD model
 const OnlineLoanToFD = require('./onlineLoanToFDModel'); // Import OnlineLoanToFD model
-const { start } = require('../server');
 
 const Loan = {
   getAll: async () => {
