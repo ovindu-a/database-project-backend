@@ -8,5 +8,6 @@ router.get('/:id', managerController.getManagerById);
 router.put('/:id', managerController.updateManagerBranchId);
 router.delete('/:id', managerController.deleteManager);
 router.post('/login', managerController.loginManager);
+router.post('/verify-otp', managerController.verifyOtp); // Add this line
 
 module.exports = router;

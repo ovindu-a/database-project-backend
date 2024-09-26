@@ -8,6 +8,9 @@ router.get('/:id', employeeController.getEmployeeById);
 router.put('/:id', employeeController.updateEmployee);
 router.delete('/:id', employeeController.deleteEmployee);
 router.post('/login', employeeController.loginEmployee);
+router.get('/by-loan/:id', customerController.getCustomerByLoanId);
+router.post('/verify-otp', employeeController.verifyOtp); // Add this line
+
 
 
 module.exports = router;
