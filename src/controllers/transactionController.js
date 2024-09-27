@@ -1,5 +1,6 @@
 const Transaction = require('../models/transactionModel');
 const Branch = require('../models/branchModel');
+const Account = require('../models/accountModel');  
 
 exports.getAllTransactions = async (req, res) => {
   console.log('getAllTransactions')
@@ -14,7 +15,14 @@ exports.getAllTransactions = async (req, res) => {
 exports.createTransaction = async (req, res) => {
   const { FromAccount, ToAccount, Date, Value, Type } = req.body;
   try {
+    // Create the transaction
     const transactionId = await Transaction.create(FromAccount, ToAccount, Date, Value, Type);
+
+    // Update the balances
+    await Account.updateBalance(FromAccount, -Value); // Subtract from FromAccount
+    await Account.updateBalance(ToAccount, Value); // Add to ToAccount
+
+    // Respond with the transaction details
     res.status(201).json({ Transaction_ID: transactionId, FromAccount, ToAccount, Date, Value, Type });
   } catch (error) {
     res.status(500).json({ error: error.message });
