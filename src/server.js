@@ -8,7 +8,7 @@ const {verifyCookie} = require('./middleware/authMiddleware');
 
 // Use CORS middleware
 app.use(cors({
-  origin: 'http://localhost:3000', // Your frontend URL
+  origin: 'https://database-frontend-g8-2754759bd882.herokuapp.com', // Your frontend URL
   credentials: true // Allow credentials (cookies)
 }));
 
