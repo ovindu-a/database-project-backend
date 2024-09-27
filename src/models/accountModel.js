@@ -59,6 +59,18 @@ const Account = {
     } catch (error) {
       throw error;
     }
+  },
+
+  updateBalance: async (accountId, amount) => {
+    try {
+      const [result] = await db.query(
+        'UPDATE Account SET Balance = Balance + ? WHERE Account_ID = ?',
+        [amount, accountId]
+      );
+      return result.affectedRows; // Return the number of affected rows
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
