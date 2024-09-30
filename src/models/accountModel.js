@@ -71,6 +71,33 @@ const Account = {
     } catch (error) {
       throw error;
     }
+  },
+  
+  withdraw: async (accountId, amount) => {
+    try {
+      // First, check if the account has sufficient balance
+      const [account] = await db.query('SELECT Balance FROM Account WHERE Account_ID = ?', [accountId]);
+
+      if (account.length === 0) {
+        throw new Error('Account not found');
+      }
+
+      const currentBalance = account[0].Balance;
+
+      if (currentBalance < amount) {
+        throw new Error('Insufficient balance');
+      }
+
+      // Update the balance by subtracting the amount
+      const [result] = await db.query(
+        'UPDATE Account SET Balance = Balance - ? WHERE Account_ID = ?',
+        [amount, accountId]
+      );
+
+      return result.affectedRows;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 

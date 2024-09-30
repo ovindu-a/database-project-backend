@@ -1,5 +1,6 @@
 const { type } = require('express/lib/response');
 const Account = require('../models/accountModel');
+const Transaction = require('../models/transactionModel');
 const { generateInterestTransactions } = require('../utils/interestCalculator');
 
 exports.getAllAccounts = async (req, res) => {
@@ -51,4 +52,30 @@ exports.getByCustomer = async (req, res) => {
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-}
+};
+
+exports.withdrawFromAccount = async (req, res) => {
+  const { accountId } = req.params; // Account ID from the URL
+  const { amount } = req.body; // Amount to withdraw from the request body
+
+  try {
+    // Make the withdrawal
+    const affectedRows = await Account.withdraw(accountId, amount);
+    if (affectedRows) {
+      // Create a transaction after the successful withdrawal
+      await Transaction.create(accountId, null, new Date(), amount, 'ATM Withdrawal'); // Assuming null for ToAccount as it is an ATM withdrawal
+      
+      res.json({ message: `Withdrawal of ${amount} from account ${accountId} successful.` });
+    } else {
+      res.status(404).json({ message: 'Account not found or withdrawal failed.' });
+    }
+  } catch (error) {
+    if (error.message === 'Insufficient balance') {
+      res.status(400).json({ error: 'Insufficient balance.' });
+    } else if (error.message === 'Account not found') {
+      res.status(404).json({ error: 'Account not found.' });
+    } else {
+      res.status(500).json({ error: error.message });
+    }
+  }
+};
