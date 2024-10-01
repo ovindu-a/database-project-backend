@@ -83,7 +83,7 @@ exports.getAllLoanApplicationsByManagerID = async (req, res) => {
     console.log('Branch ID:', branchId);
     if (branchId && branchId.Branch_ID) {
       const loanApplications = await LoanApplication.getAllByBranchID(branchId.Branch_ID);
-      // console.log('Loan Applications:', loanApplications);
+      console.log('Loan Applications:', loanApplications);
       res.status(200).json(loanApplications );
     } else {
       res.status(404).json(loanApplications);
@@ -112,7 +112,7 @@ exports.getPendingLoanApplicationsByCustomerID = async (req, res) => {
 // New method for approving a loan application
 exports.approveLoanApplication = async (req, res) => {
   const { id } = req.params;  // Application_ID
-  const { Manager_ID, Approved, Branch_ID, Customer_ID, LoanPeriod, InterestRate, LoanValue } = req.body;  // Additional parameters
+  const { Manager_ID, Approved } = req.body;  // Additional parameters
 
   console.log('Approving loan application', id, 'by manager', Manager_ID);
 
@@ -132,8 +132,8 @@ exports.approveLoanApplication = async (req, res) => {
     console.log('Application:', application);
 
     // Update the Approved status to true
-    const affectedRows = await LoanApplication.updateApprovalStatus(id, 1);
-    if (affectedRows) {
+    const affectedRows = await LoanApplication.updateApprovalStatus(id, Approved);
+    if (Approved === 1) {
       // Create the loan after approval
       const loanDate = new Date(); // Set the loan creation date to today
       const loanId = await Loan.create(application.Branch_ID, application.Customer_ID, application.LoanPeriod, 10, loanDate, application.LoanValue, id); // Create the loan

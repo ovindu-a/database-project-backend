@@ -108,38 +108,12 @@ exports.getTransactionsByAccount = async (req, res) => {
   }
 };
 
-exports.getAllLoanApplicationsByManagerID = async (req, res) => {
-  const { id } = req.params;
-  console.log('Getting all loan applications for manager', id);
-  try {
-    const branchId = await Branch.getByManagerID(id);
-    console.log('Branch ID:', branchId);
-    if (branchId && branchId.Branch_ID) {
-      const loanApplications = await LoanApplication.getAllByBranchID(branchId.Branch_ID);
-      console.log('Loan Applications:', loanApplications);
-      res.status(200).json(loanApplications );
-    } else {
-      res.status(404).json(loanApplications);
-    }
-  } catch (error) {
-    console.error('Error fetching loan applications:', error);
-    res.status(500).json({ error: error.message, data: [] });
-  }
-};
-
 exports.getOutgoingReport = async (req, res) => {
   const { id } = req.params;
   const { startDate, endDate } = req.body;
 
-  let Branch_ID;
   try {
-    Branch_ID = await Branch.getByManagerID(id);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-
-  try {
-    const transactions = await Transaction.outgoingReport(Branch_ID.Branch_ID, startDate, endDate);
+    const transactions = await Transaction.outgoingReport(id, startDate, endDate);
     res.json(transactions);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -151,17 +125,8 @@ exports.getIncomingReport = async (req, res) => {
   const { id } = req.params;
   const { startDate, endDate } = req.body;
 
-  console.log('Incoming report for manager', id, 'from', startDate, 'to', endDate);
-
-  let Branch_ID;
   try {
-    Branch_ID = await Branch.getByManagerID(id);
-  } catch (error) {
-    res.status(500).json({ error: error.message });
-  }
-
-  try {
-    const transactions = await Transaction.incomingReport(Branch_ID.Branch_ID, startDate, endDate);
+    const transactions = await Transaction.incomingReport(id, startDate, endDate);
     res.json(transactions);
   } catch (error) {
     res.status(500).json({ error: error.message });
