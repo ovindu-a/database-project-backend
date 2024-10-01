@@ -112,6 +112,13 @@ exports.getOutgoingReport = async (req, res) => {
   const { id } = req.params;
   const { startDate, endDate } = req.body;
 
+  // let Branch_ID;
+  // try {
+  //   Branch_ID = await Branch.getByManagerID(id);
+  // } catch (error) {
+  //   res.status(500).json({ error: error.message });
+  // }
+
   try {
     const transactions = await Transaction.outgoingReport(id, startDate, endDate);
     res.json(transactions);
@@ -125,7 +132,17 @@ exports.getIncomingReport = async (req, res) => {
   const { id } = req.params;
   const { startDate, endDate } = req.body;
 
+  // console.log('Incoming report for manager', id, 'from', startDate, 'to', endDate);
+
+  // let Branch_ID;
+  // try {
+  //   Branch_ID = await Branch.getByManagerID(id);
+  // } catch (error) {
+  //   res.status(500).json({ error: error.message });
+  // }
+
   try {
+    const transactions = await Transaction.incomingReport(id, startDate, endDate);
     const transactions = await Transaction.incomingReport(id, startDate, endDate);
     res.json(transactions);
   } catch (error) {

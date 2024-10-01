@@ -79,6 +79,15 @@ exports.getLoanInstallmentsByLoanId = async (req, res) => {
 
 exports.getLateLoans = async (req, res) => {
   const  { id }  = req.params;
+  // let Branch_ID = null;
+
+  // try {
+  //   Branch_ID = await Branch.getByManagerID( id );
+  //   console.log(Branch_ID);
+  // } catch (error) {
+  //   console.error("Error occurred while fetching branch ID");
+  //   return res.status(500).json({ error: error.message });
+  // }
 
   try {
     const loanInstallments = await LoanInstallments.getLate(id);
