@@ -85,9 +85,8 @@ const LoanApplication = {
 
   getAllByBranchID: async (Branch_ID) => {
     try {
-      const [rows] = await db.query('SELECT * FROM LoanApplication WHERE Branch_ID = ?', [Branch_ID]);
+      const [rows] = await db.query('SELECT * FROM LoanApplication WHERE Branch_ID = ? AND Approved = 0', [Branch_ID]);
       return rows ;
-      
     } catch (error) {
       throw error;
     }
@@ -102,9 +101,6 @@ const LoanApplication = {
     }
   }
 
-
 };
-
-
 
 module.exports = LoanApplication;
