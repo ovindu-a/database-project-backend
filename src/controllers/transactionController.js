@@ -117,6 +117,7 @@ exports.getTransactionsByAccount = async (req, res) => {
 };
 
 exports.getOutgoingReport = async (req, res) => {
+  console.log('Outgoing report for manager', req.params.id, 'from', req.body.startDate, 'to', req.body.endDate);
   const { id } = req.params;
   const { startDate, endDate } = req.body;
 
@@ -129,6 +130,7 @@ exports.getOutgoingReport = async (req, res) => {
 
   try {
     const transactions = await Transaction.outgoingReport(id, startDate, endDate);
+    console.log(res)
     res.json(transactions);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -151,7 +153,7 @@ exports.getIncomingReport = async (req, res) => {
 
   try {
     const transactions = await Transaction.incomingReport(id, startDate, endDate);
-    const transactions = await Transaction.incomingReport(id, startDate, endDate);
+
     res.json(transactions);
   } catch (error) {
     res.status(500).json({ error: error.message });
