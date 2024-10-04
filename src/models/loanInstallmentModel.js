@@ -130,7 +130,7 @@ const LoanInstallments = {
 
       // Insert the transaction record for the payment
       const [transaction] = await db.query(
-        'INSERT INTO Transaction (FromAccount, ToAccount, Date, Value, Type) VALUES (?, 1, NOW(), ?, "Loan Payment")',
+        'INSERT INTO Transaction (FromAccount, ToAccount, Date, Value, Type) VALUES (?, 1, NOW(), ?, \'Loan Payment\')',
         [Account_ID, installment[0].Loan_ID, Amount]
       );
 
