@@ -1,5 +1,7 @@
 const Customer = require('../models/customerModel');
 const Loan = require('../models/loanModel');
+const FixedDeposit = require('../models/FDModel');
+const Account = require('../models/accountModel');
 const bcrypt = require('bcryptjs');
 const { createJwtToken } = require('../middleware/authMiddleware'); // Update this line
 const { sendOtp, generateOtp } = require('../services/otpService'); // Update this line
@@ -151,6 +153,31 @@ exports.getCustomerByLoanId = async (req, res) => {
     };
 
     return res.json(combinedData);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+}
+
+exports.getBriefInfoByCustomerId = async (req, res) => {
+  const { id } = req.params;
+  console.log('Ready to give brief info for customer:', id);
+  try {
+    const user = await Customer.getById_opt(id);
+    const accounts = await Account.getByCustomer_opt(id);
+    const loans = await Loan.getByCustomer_opt(id);
+    const fds = await FixedDeposit.getFDsByCustomerId(id);
+
+    // Reconstruct
+    const combinedData = {
+      user,
+      accounts,
+      loans,
+      fds: fds.map(fd => ({
+        FD_ID: fd.FD_ID,
+        Amount: fd.InitialAmount,
+      }))
+    };
+    res.json(combinedData); 
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

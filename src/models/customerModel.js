@@ -69,6 +69,15 @@ const Customer = {
       throw error;
     }
   },
+
+  getById_opt: async (Customer_ID) => {
+    try {
+      const [rows] = await db.query('SELECT Name,NIC,Address FROM Customer WHERE Customer_ID = ?', [Customer_ID]);
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 module.exports = Customer;

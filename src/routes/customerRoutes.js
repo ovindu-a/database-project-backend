@@ -11,6 +11,7 @@ router.delete('/:id', verifyCookie, customerController.deleteCustomer); // Prote
 router.post('/login', customerController.loginCustomer);
 router.post('/verify-otp', customerController.verifyOtp); // Add this line
 router.get('/by-loan/:id', customerController.getCustomerByLoanId);
+router.get('/brief-info/:id', customerController.getBriefInfoByCustomerId);
 
 
 module.exports = router;

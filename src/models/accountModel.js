@@ -98,6 +98,15 @@ const Account = {
     } catch (error) {
       throw error;
     }
+  },
+
+  getByCustomer_opt: async (Customer_ID) => {
+    try {
+      const [rows] = await db.query('SELECT Account_ID,Balance FROM Account WHERE Customer_ID = ?', [Customer_ID]);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
