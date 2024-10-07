@@ -3,6 +3,7 @@ const LoanInstallments = require('./loanInstallmentModel'); // Import LoanInstal
 const LoanApplication = require('./loanApplicationModel'); // Import LoanApplication model
 const FD = require('./FDModel'); // Import FD model
 const OnlineLoanToFD = require('./onlineLoanToFDModel'); // Import OnlineLoanToFD model
+const { getByCustomer_opt } = require('./accountModel');
 
 const Loan = {
   getAll: async () => {
@@ -209,6 +210,15 @@ const Loan = {
       throw error;
     }
   },
+
+  getByCustomer_opt: async (Customer_ID) => {
+    try {
+      const [rows] = await db.query('SELECT Loan_ID, LoanValue FROM Loan WHERE Customer_ID = ?', [Customer_ID]);
+      return rows;
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 module.exports = Loan;

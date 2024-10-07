@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const { getByCustomer_opt } = require('./accountModel');
 
 const FD = {
   getAll: async () => {
