@@ -55,6 +55,7 @@ const FD = {
   },
 
   getFDsByCustomerId: async (Customer_ID) => {
+    // todo : make procedure
     try {
       const query = `
         SELECT fd.*

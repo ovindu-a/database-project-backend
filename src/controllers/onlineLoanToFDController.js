@@ -23,6 +23,7 @@ exports.getAllOnlineLoansToFD = async (req, res) => {
 
 // Get a specific entry by Application_ID and FD_ID
 exports.getOnlineLoanToFDById = async (req, res) => {
+  // make function
   const { applicationId, fdId } = req.params;
   try {
     const loanToFD = await OnlineLoanToFD.getById(applicationId, fdId);

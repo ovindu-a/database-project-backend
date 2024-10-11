@@ -23,6 +23,7 @@ const LoanInstallments = {
   },
 
   createLoanInstallmentsSet: async (Loan_ID, Branch_ID, Loan_Period, Interest_Rate, Value, Start_date) => {
+    // todo : check and remove
     try {
       // Calculate monthly interest rate
       const monthlyInterestRate = Interest_Rate / 1200;
@@ -111,6 +112,7 @@ const LoanInstallments = {
   },
 
   makePayment: async (Installment_ID, Account_ID, Amount) => {
+    // todo : make procedure
     try {
       // First, check if the installment exists
       const [installment] = await db.query(

@@ -48,6 +48,7 @@ const Branch = {
   },
 
   getByManagerID: async (Manager_ID) => {
+    // todo : make procedure
     try {
       const [id] = await db.query('SELECT Branch_ID FROM Branch WHERE Manager_ID = ?', [Manager_ID]);
       return id[0];
