@@ -76,6 +76,8 @@ exports.getAllLoanApplications = async (req, res) => {
 };
 
 exports.getAllLoanApplicationsByManagerID = async (req, res) => {
+  // todo : make procedure
+
   const { id } = req.params;
   console.log('Getting all loan applications for manager', id);
   try {
@@ -111,6 +113,8 @@ exports.getPendingLoanApplicationsByCustomerID = async (req, res) => {
 
 // New method for approving a loan application
 exports.approveLoanApplication = async (req, res) => {
+  // todo : make procedure
+
   const { id } = req.params;  // Application_ID
   const { Manager_ID, Approved } = req.body;  // Additional parameters
 

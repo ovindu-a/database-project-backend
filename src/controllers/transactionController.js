@@ -13,6 +13,7 @@ exports.getAllTransactions = async (req, res) => {
 };
 
 exports.createTransaction = async (req, res) => {
+  // todo : make procedure
   const { FromAccount, ToAccount, Date, Value, Type } = req.body;
   try {
     // Create the transaction
@@ -96,6 +97,7 @@ exports.getTransactionsByReceivedAccount = async (req, res) => {
 
 
 exports.getTransactionsByAccount = async (req, res) => {
+  // todo : make procedure
   const { account } = req.params;
   console.log('Ready to give transactions for account:', account);
 
