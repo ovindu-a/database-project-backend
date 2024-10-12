@@ -56,7 +56,7 @@ const LoanApplication = {
   }, 
 
   updateApprovalStatus: async (Application_ID, Approved) => {
-    // todo : make procedure
+    // TODO : make procedure
     try {
       const [result] = await db.query(
         'UPDATE LoanApplication SET Approved = ? WHERE Application_ID = ?',

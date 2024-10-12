@@ -16,7 +16,7 @@ const Loan = {
   },
 
   create: async (Branch_ID, Customer_ID, LoanPeriod, InterestRate, Date, LoanValue, Application_ID) => {
-    // todo : make procedure
+    // TODO : make procedure
     try {
       const [result] = await db.query(
         'INSERT INTO Loan (Branch_ID, Customer_ID, LoanPeriod, InterestRate, Date, LoanValue, Application_ID) VALUES (?, ?, ?, ?, ?, ?, ?)',
@@ -179,7 +179,7 @@ const Loan = {
   },
 
   createQuickLoan: async (Branch_ID, Customer_ID, LoanPeriod, InterestRate, StartDate, LoanValue, FD_ID) => {
-    // todo : make procedure
+    // TODO : make procedure
     try {
       // Get the total loan value already taken against the specified FD
       // console.log(FD_ID)
