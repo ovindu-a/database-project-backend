@@ -74,7 +74,7 @@ const Account = {
   },
   
   withdraw: async (accountId, amount) => {
-    // todo: make procedure
+    // TODO: make procedure
     try {
       // First, check if the account has sufficient balance
       const [account] = await db.query('SELECT Balance FROM Account WHERE Account_ID = ?', [accountId]);

@@ -21,7 +21,7 @@ exports.createAccount = async (req, res) => {
 
     // Generate monthly interest transactions based on Plan
     if (Type === 'Savings') {
-      // todo :make procedure
+      // TODO :make procedure
       await generateInterestTransactions(accountId, Balance, OpeningDate, Plan);
     }
 
@@ -56,7 +56,7 @@ exports.getByCustomer = async (req, res) => {
 };
 
 exports.withdrawFromAccount = async (req, res) => {
-  // todo : make procedure
+  // TODO : make procedure
   const { accountId } = req.params; // Account ID from the URL
   const { amount } = req.body; // Amount to withdraw from the request body
 
