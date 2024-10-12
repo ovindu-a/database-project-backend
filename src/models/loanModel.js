@@ -136,24 +136,13 @@ const Loan = {
   },
 
   getTotalLoanValueByFD: async (FD_ID) => {
-    const query = `
-      SELECT 
-          SUM(l.LoanValue) AS TotalLoanValue
-      FROM 
-          Loan l
-      JOIN 
-          LoanApplication la ON l.Application_ID = la.Application_ID
-      JOIN 
-          Online_loan_to_FD olf ON la.Application_ID = olf.Application_ID
-      WHERE 
-          olf.FD_ID = ? AND la.LoanType = 'Online';
-    `;
-
     try {
-      const [rows] = await db.query(query, [FD_ID]);
+      // Call the function in MySQL using a SELECT statement
+      const [rows] = await db.query('SELECT GetTotalLoanValueByFD(?) AS TotalLoanValue', [FD_ID]);
+      // Return the total loan value
       return rows[0].TotalLoanValue || 0; // Return 0 if no loans are found
     } catch (error) {
-      throw error;
+      throw new Error(`Error fetching total loan value for FD_ID ${FD_ID}: ${error.message}`);
     }
   },
 
@@ -179,38 +168,51 @@ const Loan = {
   },
 
   createQuickLoan: async (Branch_ID, Customer_ID, LoanPeriod, InterestRate, StartDate, LoanValue, FD_ID) => {
-    // TODO : make procedure
+
     try {
-      // Get the total loan value already taken against the specified FD
-      // console.log(FD_ID)
       StartDate = new Date(StartDate);
-      const existingLoans = await Loan.getTotalLoanValueByFD(FD_ID);
-      const fdDetails = await FD.getById(FD_ID); // Assuming this method exists to get FD details
-      // console.log(fdDetails)
-      const maxLoanValue = fdDetails.InitialAmount * 0.6; // 60% of FD amount
-
-      // Check if the requested loan value exceeds the allowed limit
-      if (existingLoans + LoanValue > maxLoanValue) {
-        throw new Error(`Requested loan value exceeds the maximum allowed limit of ${maxLoanValue}.`);
-      }
-
-      const loanApplicationId = await LoanApplication.create(Branch_ID, Customer_ID, LoanPeriod, StartDate, LoanValue, 1, 'Online'); // Adjust parameters as needed
-      var loanId;
-      console.log(loanApplicationId)
-      const affectedRows = await LoanApplication.updateApprovalStatus(loanApplicationId, 1);
-      if (affectedRows) {
-        // Create the loan after approval
-        const loanDate = new Date(); // Set the loan creation date to today
-        loanId = await Loan.create(Branch_ID, Customer_ID, LoanPeriod, InterestRate, loanDate, LoanValue, loanApplicationId); // Create the loan
-        await OnlineLoanToFD.create(loanApplicationId, FD_ID); 
-      }
-
-
-      return loanId;
+      const [rows] = await db.query('CALL CreateOnlineLoan(?, ?, ?, ?, ?, ?, ?)', 
+        [Branch_ID, Customer_ID, LoanPeriod, InterestRate, StartDate, LoanValue, FD_ID]);
+      
+      return rows[0].Loan_ID; // Return the loan ID
     } catch (error) {
-      console.log(error)
-      throw error;
+      throw new Error(`Error creating quick loan: ${error.message}`);
     }
+
+    // TODO : remove after testing
+    // try {
+    //   // Get the total loan value already taken against the specified FD
+    //   // console.log(FD_ID)
+    //   StartDate = new Date(StartDate);
+    //   const existingLoans = await Loan.getTotalLoanValueByFD(FD_ID);
+    //   const fdDetails = await FD.getById(FD_ID); // Assuming this method exists to get FD details
+    //   // console.log(fdDetails)
+    //   const maxLoanValue = fdDetails.InitialAmount * 0.6; // 60% of FD amount
+    //   console.log(maxLoanValue, "Max Loan Value")
+    //   console.log(existingLoans, "Existing Loans")
+
+    //   // Check if the requested loan value exceeds the allowed limit
+    //   if (existingLoans + LoanValue > maxLoanValue) {
+    //     throw new Error(`Requested loan value exceeds the maximum allowed limit of ${maxLoanValue}.`);
+    //   }
+
+    //   const loanApplicationId = await LoanApplication.create(Branch_ID, Customer_ID, LoanPeriod, StartDate, LoanValue, 1, 'Online'); // Adjust parameters as needed
+    //   var loanId;
+    //   console.log(loanApplicationId)
+    //   const affectedRows = await LoanApplication.updateApprovalStatus(loanApplicationId, 1);
+    //   if (affectedRows) {
+    //     // Create the loan after approval
+    //     const loanDate = new Date(); // Set the loan creation date to today
+    //     loanId = await Loan.create(Branch_ID, Customer_ID, LoanPeriod, InterestRate, loanDate, LoanValue, loanApplicationId); // Create the loan
+    //     await OnlineLoanToFD.create(loanApplicationId, FD_ID); 
+    //   }
+
+
+    //   return loanId;
+    // } catch (error) {
+    //   console.log(error)
+    //   throw error;
+    // }
   },
 
   getByCustomer_opt: async (Customer_ID) => {

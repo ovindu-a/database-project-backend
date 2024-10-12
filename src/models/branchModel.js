@@ -48,10 +48,10 @@ const Branch = {
   },
 
   getByManagerID: async (Manager_ID) => {
-    // TODO : make procedure
     try {
-      const [id] = await db.query('SELECT Branch_ID FROM Branch WHERE Manager_ID = ?', [Manager_ID]);
-      return id[0];
+      // Call the stored procedure 'GetBranchByManagerID'
+      const [rows] = await db.query('CALL GetBranchByManagerID(?)', [Manager_ID]);
+      return rows[0]; // Assuming you want the first row (Branch_ID)
     } catch (error) {
       throw error;
     }
