@@ -55,20 +55,16 @@ const FD = {
   },
 
   getFDsByCustomerId: async (Customer_ID) => {
-    // todo : make procedure
     try {
-      const query = `
-        SELECT fd.*
-        FROM FD fd
-        JOIN Account a ON fd.Account_ID = a.Account_ID
-        WHERE a.Customer_ID = ?
-      `;
-      const [rows] = await db.query(query, [Customer_ID]);
-      return rows;
+      // Call the stored procedure in MySQL
+      const [rows] = await db.query('CALL GetFDsByCustomerID(?)', [Customer_ID]);
+      console.log(rows[0]);
+      return rows[0];
     } catch (error) {
-      throw error;
+      throw new Error(`Error fetching FDs for Customer_ID ${Customer_ID}: ${error.message}`);
     }
   }
+  
 };
 
 module.exports = FD;

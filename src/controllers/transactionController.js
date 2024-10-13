@@ -13,15 +13,17 @@ exports.getAllTransactions = async (req, res) => {
 };
 
 exports.createTransaction = async (req, res) => {
-  // TODO : make procedure
+  // TODO : check functionality
+
   const { FromAccount, ToAccount, Date, Value, Type } = req.body;
   try {
     // Create the transaction
     const transactionId = await Transaction.create(FromAccount, ToAccount, Date, Value, Type);
 
     // Update the balances
-    await Account.updateBalance(FromAccount, -Value); // Subtract from FromAccount
-    await Account.updateBalance(ToAccount, Value); // Add to ToAccount
+    // await Account.updateBalance(FromAccount, -Value); // Subtract from FromAccount
+    // await Account.updateBalance(ToAccount, Value); // Add to ToAccount
+    // removed as this is done by trigger
 
     // Respond with the transaction details
     res.status(201).json({ Transaction_ID: transactionId, FromAccount, ToAccount, Date, Value, Type });
@@ -132,7 +134,6 @@ exports.getOutgoingReport = async (req, res) => {
 
   try {
     const transactions = await Transaction.outgoingReport(id, startDate, endDate);
-    console.log(res)
     res.json(transactions);
   } catch (error) {
     res.status(500).json({ error: error.message });

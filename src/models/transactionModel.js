@@ -75,7 +75,7 @@ const Transaction = {
   outgoingReport: async (id,startDate,endDate) => {
     try {
       const [rows] = await db.query(
-        'SELECT FromAccount,ToAccount,Date,Value,Account.Type FROM Transaction inner join Account on Transaction.FromAccount = Account.Account_ID WHERE Branch_ID = branchId_by_managerId(?) and (Date >= ? AND Date <= ?)', 
+        'SELECT FromAccount,ToAccount,Date,Value,Account.Type FROM Transaction inner join Account on Transaction.FromAccount = Account.Account_ID WHERE Branch_ID = GetBranchIDByManagerID(?) and (Date >= ? AND Date <= ?)', 
         [id,startDate,endDate]);
       return rows;
     } catch (error) {
@@ -86,7 +86,7 @@ const Transaction = {
   incomingReport: async (id,startDate,endDate) => {
     try {
       const [rows] = await db.query(
-        'SELECT FromAccount,ToAccount,Date,Value,Account.Type FROM Transaction inner join Account on Transaction.ToAccount = Account.Account_ID WHERE Branch_ID = branchId_by_managerId(?) and (Date >= ? AND Date <= ?)', 
+        'SELECT FromAccount,ToAccount,Date,Value,Account.Type FROM Transaction inner join Account on Transaction.ToAccount = Account.Account_ID WHERE Branch_ID = GetBranchIDByManagerID(?) and (Date >= ? AND Date <= ?)', 
         [id,startDate,endDate]);
       return rows;
     } catch (error) {
