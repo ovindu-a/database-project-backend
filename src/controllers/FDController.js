@@ -10,10 +10,10 @@ exports.getAllFDs = async (req, res) => {
 };
 
 exports.createFD = async (req, res) => {
-  const { Branch_ID, Customer_ID, Account_ID, Period, StartDate, InitialAmount } = req.body;
+  const { Branch_ID, Account_ID, Period, StartDate, InitialAmount } = req.body;
   try {
-    const fdId = await FD.create(Branch_ID, Customer_ID, Account_ID, Period, StartDate, InitialAmount);
-    res.status(201).json({ FD_ID: fdId, Branch_ID, Customer_ID, Account_ID, Period, StartDate, InitialAmount });
+    const fdId = await FD.create(Branch_ID, Account_ID, Period, StartDate, InitialAmount);
+    res.status(201).json({ FD_ID: fdId, Branch_ID, Account_ID, Period, StartDate, InitialAmount });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

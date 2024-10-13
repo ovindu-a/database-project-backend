@@ -11,11 +11,11 @@ const FD = {
     }
   },
 
-  create: async (Branch_ID, Customer_ID, Account_ID, Period, StartDate, InitialAmount) => {
+  create: async (Branch_ID, Account_ID, Period, StartDate, InitialAmount) => {
     try {
       const [result] = await db.query(
-        'INSERT INTO FD (Branch_ID, Customer_ID, Account_ID, Period, StartDate, InitialAmount) VALUES (?, ?, ?, ?, ?, ?)',
-        [Branch_ID, Customer_ID, Account_ID, Period, StartDate, InitialAmount]
+        'INSERT INTO FD (Branch_ID, Account_ID, Period, StartDate, InitialAmount) VALUES (?, ?, ?, ?, ?)',
+        [Branch_ID, Account_ID, Period, StartDate, InitialAmount]
       );
       return result.insertId;
     } catch (error) {
