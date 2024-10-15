@@ -2,6 +2,32 @@
 
 DELIMITER $$
 
+-- BEFORE INSERT trigger to check transaction count
+CREATE TRIGGER CheckTransactionCountBeforeInsert
+BEFORE INSERT ON Transaction
+FOR EACH ROW
+BEGIN
+    DECLARE transactionCount INT;
+
+    -- Count the number of transactions for the current month
+    SELECT COUNT(*)
+    INTO transactionCount
+    FROM Transaction
+    WHERE FromAccount = NEW.FromAccount
+      AND MONTH(Date) = MONTH(CURRENT_DATE())
+      AND YEAR(Date) = YEAR(CURRENT_DATE());
+
+    -- Raise an error if the transaction count exceeds 5
+    IF transactionCount >= 5 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Transaction limit for the current month exceeded';
+    END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
 CREATE TRIGGER UpdateAccountBalancesAfterTransaction
 AFTER INSERT ON Transaction
 FOR EACH ROW
