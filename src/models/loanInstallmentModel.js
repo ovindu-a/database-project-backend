@@ -112,7 +112,7 @@ const LoanInstallments = {
 
   getLate: async (Manager_ID) => {
     try {
-      const [rows] = await db.query('SELECT * FROM LoanInstallments WHERE Branch_ID = GetBranchIDByManagerID(?) AND Transaction_ID IS NULL AND DueDate < CURDATE()', [Manager_ID]);
+      const [rows] = await db.query('SELECT * FROM LoanInstallments WHERE Branch_ID = branchId_by_managerId(?) AND Transaction_ID IS NULL AND DueDate < CURDATE()', [Manager_ID]);
       
       return rows;
     } catch (error) {

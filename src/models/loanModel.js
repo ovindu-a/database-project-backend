@@ -25,7 +25,7 @@ const Loan = {
       const loanId = result.insertId;
 
       // Create loan installments after loan creation
-      await LoanInstallments.createLoanInstallmentsSet(loanId, Branch_ID, LoanPeriod, InterestRate, LoanValue, Date);
+      // await LoanInstallments.createLoanInstallmentsSet(loanId, Branch_ID, LoanPeriod, InterestRate, LoanValue, Date);
 
       return loanId;
     } catch (error) {
