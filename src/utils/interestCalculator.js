@@ -32,6 +32,8 @@ const generateInterestTransactions = async (accountId, initialBalance, openingDa
   let currentBalance = initialBalance;
 
   const startDate = new Date(openingDate);
+  startDate.setMonth(startDate.getMonth() + 1); // Move to the next month
+  startDate.setDate(0);
   const endDate = new Date();
 
   console.log("Rate", interestRate);
@@ -44,7 +46,7 @@ const generateInterestTransactions = async (accountId, initialBalance, openingDa
       currentBalance += interest;
 
       // Create a transaction record for this month's interest
-      await Transaction.create(accountId, 1, startDate.toISOString().split('T')[0], interest, 'Interest Payment');
+      await Transaction.create(1, accountId, startDate.toISOString().split('T')[0], interest, 'Interest Payment');
     }
 
     // Move to the next month
