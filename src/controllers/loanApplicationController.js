@@ -79,16 +79,14 @@ exports.getAllLoanApplicationsByManagerID = async (req, res) => {
   // TODO : make procedure
 
   const { id } = req.params;
-  console.log('Getting all loan applications for manager', id);
   try {
     const [branchId] = await Branch.getByManagerID(id);
-    console.log(branchId)
     if (branchId && branchId.Branch_ID) {
       const loanApplications = await LoanApplication.getAllByBranchID(branchId.Branch_ID);
-      // console.log('Loan Applications:', loanApplications);
+
       res.status(200).json(loanApplications );
     } else {
-      res.status(404).json(loanApplications);
+      res.status(404).json({ message: 'Loan applications not found' });
     }
   } catch (error) {
     console.error('Error fetching loan applications:', error);

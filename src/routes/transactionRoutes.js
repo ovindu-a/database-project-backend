@@ -12,6 +12,7 @@ router.get('/toAccount/:account', transactionController.getTransactionsByReceive
 router.get('/byAccount/:account', transactionController.getTransactionsByAccount);
 router.post('/outgoingReport/:id', transactionController.getOutgoingReport);
 router.post('/incomingReport/:id', transactionController.getIncomingReport);
+router.get('/transaction-totals/:managerId', transactionController.getTransactionTotals);
 
 module.exports = router;
 

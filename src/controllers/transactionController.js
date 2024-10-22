@@ -163,3 +163,13 @@ exports.getIncomingReport = async (req, res) => {
   }
 
 }
+
+exports.getTransactionTotals = async (req, res) => {
+  const { managerId } = req.params;
+  try {
+    const totals = await Transaction.getTransactionTotals(managerId);
+    res.json(totals);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
