@@ -94,6 +94,31 @@ const Transaction = {
     }
   },
 
+  getTransactionTotals: async (managerId) => {
+    try {
+      // Fetch the Branch_ID using the managerId
+      const [branchResult] = await db.query(
+        `SELECT branchId_by_managerId(?) AS Branch_ID`, [managerId]
+      );
+      
+      const branchId = branchResult[0].Branch_ID;
+  
+      // Now fetch the transaction totals for the branch
+      const [rows] = await db.query(
+        `SELECT 
+          SUM(CASE WHEN FromAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = ?) THEN Value ELSE 0 END) AS totalOutgoing,
+          SUM(CASE WHEN ToAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = ?) THEN Value ELSE 0 END) AS totalIncoming
+        FROM Transaction
+        WHERE FromAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = ?)
+           OR ToAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = ?)`,
+        [branchId, branchId, branchId, branchId]
+      );
+      
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
+  }
 };
 
 module.exports = Transaction;
