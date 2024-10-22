@@ -44,7 +44,7 @@ const generateInterestTransactions = async (accountId, initialBalance, openingDa
       currentBalance += interest;
 
       // Create a transaction record for this month's interest
-      await Transaction.create(accountId, null, startDate.toISOString().split('T')[0], interest, 'Interest Payment');
+      await Transaction.create(accountId, 1, startDate.toISOString().split('T')[0], interest, 'Interest Payment');
     }
 
     // Move to the next month
