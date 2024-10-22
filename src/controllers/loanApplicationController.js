@@ -83,6 +83,7 @@ exports.getAllLoanApplicationsByManagerID = async (req, res) => {
     const [branchId] = await Branch.getByManagerID(id);
     if (branchId && branchId.Branch_ID) {
       const loanApplications = await LoanApplication.getAllByBranchID(branchId.Branch_ID);
+
       res.status(200).json(loanApplications );
     } else {
       res.status(404).json({ message: 'Loan applications not found' });
