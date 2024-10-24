@@ -4,7 +4,7 @@ const { getByLoanId } = require('./loanInstallmentModel');
 const Customer = {
   getAll: async () => {
     try {
-      const [rows] = await db.query('SELECT * FROM Customer');
+      const [rows] = await db.query('SELECT * FROM CustomerView');
       return rows;
     } catch (error) {
       throw error;
@@ -25,7 +25,7 @@ const Customer = {
 
   getById: async (Customer_ID) => {
     try {
-      const [rows] = await db.query('SELECT * FROM Customer WHERE Customer_ID = ?', [Customer_ID]);
+      const [rows] = await db.query('SELECT * FROM CustomerView WHERE Customer_ID = ?', [Customer_ID]);
       return rows[0];
     } catch (error) {
       throw error;
@@ -72,7 +72,7 @@ const Customer = {
 
   getById_opt: async (Customer_ID) => {
     try {
-      const [rows] = await db.query('SELECT Name,NIC,Address FROM Customer WHERE Customer_ID = ?', [Customer_ID]);
+      const [rows] = await db.query('SELECT Name,NIC,Address FROM CustomerView WHERE Customer_ID = ?', [Customer_ID]);
       return rows[0];
     } catch (error) {
       throw error;
