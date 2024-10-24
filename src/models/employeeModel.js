@@ -3,7 +3,7 @@ const db = require('../config/db');
 const Employee = {
   getAll: async () => {
     try {
-      const [rows] = await db.query('SELECT * FROM Employee');
+      const [rows] = await db.query('SELECT * FROM EmployeeView');
       return rows;
     } catch (error) {
       throw error;
@@ -24,7 +24,7 @@ const Employee = {
 
   getById: async (ID) => {
     try {
-      const [rows] = await db.query('SELECT * FROM Employee WHERE Employee_ID = ?', [ID]);
+      const [rows] = await db.query('SELECT * FROM EmployeeView WHERE Employee_ID = ?', [ID]);
       return rows[0];
     } catch (error) {
       throw error;
