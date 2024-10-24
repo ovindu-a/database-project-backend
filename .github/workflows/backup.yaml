@@ -1,1 +1,25 @@
+name: Merge main into backup
 
+# Manual trigger using workflow_dispatch
+on:
+  workflow_dispatch:
+
+jobs:
+  merge-branch:
+    runs-on: ubuntu-latest
+    
+    steps:
+      # Checkout the repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # Merge the main branch into the backup branch using the GitHub API
+      - name: Merge main into backup
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          curl -X POST \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/${{ github.repository }}/merges \
+            -d '{"base":"backup", "head":"main"}'
