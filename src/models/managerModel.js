@@ -3,7 +3,7 @@ const db = require('../config/db');
 const Manager = {
   getAll: async () => {
     try {
-      const [rows] = await db.query('SELECT * FROM Manager');
+      const [rows] = await db.query('SELECT * FROM ManagerView');
       return rows;
     } catch (error) {
       throw error;
