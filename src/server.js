@@ -6,9 +6,23 @@ const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const {verifyCookie} = require('./middleware/authMiddleware');
 
+const allowedOrigins = ['http://localhost:3000', 'https://database-frontend-g8-2754759bd882.herokuapp.com'];
+
 // Use CORS middleware
 app.use(cors({
-  origin: 'http://localhost:3000', // Your frontend URL
+  // origin: 'http://localhost:3000',
+  
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Check if the request's origin is in the allowed origins array
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true // Allow credentials (cookies)
 }));
 
