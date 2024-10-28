@@ -17,6 +17,7 @@ BEGIN
       AND MONTH(Date) = MONTH(CURRENT_DATE())
       AND YEAR(Date) = YEAR(CURRENT_DATE());
 
+
     -- Raise an error if the transaction count exceeds 5
     IF transactionCount >= 5 THEN
         SIGNAL SQLSTATE '45000'
@@ -69,7 +70,7 @@ BEGIN
     SET numberOfPayments = NEW.LoanPeriod;
 
     -- Calculate monthly installment using the amortizing loan formula
-    SET monthlyInstallment = (NEW.LoanValue * monthlyInterestRate) / (1 - POW(1 + monthlyInterestRate, -numberOfPayments));
+    SET monthlyInstallment = (NEW.LoanValue * (monthlyInterestRate)) / (1 - POW(1 + monthlyInterestRate, -numberOfPayments));
 
     -- Loop through the number of payments to create each installment
     WHILE i <= numberOfPayments DO
@@ -83,6 +84,21 @@ BEGIN
         -- Increment loop counter
         SET i = i + 1;
     END WHILE;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE EVENT ApplyMonthlyInterestEvent
+ON SCHEDULE
+    EVERY 1 MONTH
+    STARTS (LAST_DAY(CURRENT_DATE) + INTERVAL 1 DAY - INTERVAL 1 MONTH)
+    ON COMPLETION PRESERVE
+DO
+BEGIN
+    -- Call the procedure on the last day of every month
+    CALL ApplyMonthlyInterest();
 END$$
 
 DELIMITER ;

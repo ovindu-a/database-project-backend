@@ -11,11 +11,11 @@ const Customer = {
     }
   },
 
-  create: async (Name, NIC, Address, username, password) => {
+  create: async (Name, NIC, Address, username, password, CustomerType = 'Personal') => {
     try {
       const [result] = await db.query(
-        'INSERT INTO Customer (Name, NIC, Address, Username, Password) VALUES (?, ?, ?, ?, ?)',
-        [Name, NIC, Address, username, password]
+        'INSERT INTO Customer (Name, NIC, Address, Username, Password, CustomerType) VALUES (?, ?, ?, ?, ?, ?)',
+        [Name, NIC, Address, username, password, CustomerType]
       );
       return result.insertId;
     } catch (error) {
@@ -72,7 +72,7 @@ const Customer = {
 
   getById_opt: async (Customer_ID) => {
     try {
-      const [rows] = await db.query('SELECT Name,NIC,Address FROM CustomerView WHERE Customer_ID = ?', [Customer_ID]);
+      const [rows] = await db.query('SELECT Name,NIC,Address,CustomerType FROM CustomerView WHERE Customer_ID = ?', [Customer_ID]);
       return rows[0];
     } catch (error) {
       throw error;
