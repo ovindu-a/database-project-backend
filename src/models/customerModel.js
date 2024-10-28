@@ -77,7 +77,37 @@ const Customer = {
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+    // Search customer by email
+    getByEmail: async (email) => {
+      try {
+        const [rows] = await db.query('SELECT * FROM Customer WHERE Email = ?', [email]);
+        return rows[0];
+      } catch (error) {
+        throw error;
+      }
+    },
+  
+    // Search customer by username
+    getByUsername: async (username) => {
+      try {
+        const [rows] = await db.query('SELECT * FROM Customer WHERE Username = ?', [username]);
+        return rows[0];
+      } catch (error) {
+        throw error;
+      }
+    }, 
+
+    // Search customer by NIC
+    getByNIC: async (NIC) => {
+      try {
+        const [rows] = await db.query('SELECT * FROM Customer WHERE NIC = ?', [NIC]);
+        return rows[0];
+      } catch (error) {
+        throw error;
+      }
+    },
 };
 
 module.exports = Customer;
