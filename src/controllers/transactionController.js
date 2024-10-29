@@ -134,7 +134,7 @@ exports.getOutgoingReport = async (req, res) => {
 
   try {
     const transactions = await Transaction.outgoingReport(id, startDate, endDate);
-    res.json(transactions);
+    res.json(transactions[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -157,7 +157,7 @@ exports.getIncomingReport = async (req, res) => {
   try {
     const transactions = await Transaction.incomingReport(id, startDate, endDate);
 
-    res.json(transactions);
+    res.json(transactions[0]);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
