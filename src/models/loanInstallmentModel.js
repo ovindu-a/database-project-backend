@@ -122,41 +122,57 @@ const LoanInstallments = {
 
   makePayment: async (Installment_ID, Account_ID, Amount) => {
     // TODO : make procedure
+
+    console.log(Installment_ID, Account_ID, Amount);
     try {
-      // First, check if the installment exists
-      const [installment] = await db.query(
-        'SELECT * FROM LoanInstallments WHERE Installment_ID = ?',
-        [Installment_ID]
-      );
-
-      // If installment not found, throw an error
-      if (installment.length === 0) {
-        throw new Error('Installment not found.');
-      }
-
-      // Check if the installment is already paid (Transaction_ID is not NULL)
-      if (installment[0].Transaction_ID !== null) {
-        throw new Error('Installment already paid.');
-      }
-
-      // Insert the transaction record for the payment
-      const [transaction] = await db.query(
-        'INSERT INTO Transaction (FromAccount, ToAccount, Date, Value, Type) VALUES (?, 1, NOW(), ?, \'Loan Payment\')',
-        [Account_ID, Amount]
-      );
-
-      const Transaction_ID = transaction.insertId;
-
-      // Update the installment to set the Transaction_ID
+      // Call the stored procedure for making a payment
       const [result] = await db.query(
-        'UPDATE LoanInstallments SET Transaction_ID = ? WHERE Installment_ID = ?',
-        [Transaction_ID, Installment_ID]
+          'CALL MakeLoanPayment(?, ?, ?)',
+          [Installment_ID, Account_ID, Amount]
       );
 
-      return result.affectedRows;
-    } catch (error) {
-      throw error;
-    }
+      // Check the affected rows (successful if procedure completes without error)
+      console.log(result);
+      return result;
+  } catch (error) {
+      throw new Error(`Payment failed: ${error.message}`);
+  }
+
+    // try {
+    //   // First, check if the installment exists
+    //   const [installment] = await db.query(
+    //     'SELECT * FROM LoanInstallments WHERE Installment_ID = ?',
+    //     [Installment_ID]
+    //   );
+
+    //   // If installment not found, throw an error
+    //   if (installment.length === 0) {
+    //     throw new Error('Installment not found.');
+    //   }
+
+    //   // Check if the installment is already paid (Transaction_ID is not NULL)
+    //   if (installment[0].Transaction_ID !== null) {
+    //     throw new Error('Installment already paid.');
+    //   }
+
+    //   // Insert the transaction record for the payment
+    //   const [transaction] = await db.query(
+    //     'INSERT INTO Transaction (FromAccount, ToAccount, Date, Value, Type) VALUES (?, 1, NOW(), ?, \'Loan Payment\')',
+    //     [Account_ID, Amount]
+    //   );
+
+    //   const Transaction_ID = transaction.insertId;
+
+    //   // Update the installment to set the Transaction_ID
+    //   const [result] = await db.query(
+    //     'UPDATE LoanInstallments SET Transaction_ID = ? WHERE Installment_ID = ?',
+    //     [Transaction_ID, Installment_ID]
+    //   );
+
+    //   return result.affectedRows;
+    // } catch (error) {
+    //   throw error;
+    // }
   }
 };
 

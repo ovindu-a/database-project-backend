@@ -16,13 +16,11 @@ RETURNS INT DETERMINISTIC
 BEGIN
     DECLARE branch_id INT;
 
-    -- Retrieve Branch_ID based on Manager_ID
     SELECT Branch_ID INTO branch_id
     FROM Branch
     WHERE Manager_ID = p_Manager_ID
     LIMIT 1;
 
-    -- Return the Branch_ID
     RETURN branch_id;
 END$$
 
@@ -58,25 +56,18 @@ BEGIN
     DECLARE i INT DEFAULT 1;
     DECLARE dueDate DATE;
 
-    -- Calculate monthly interest rate
     SET monthlyInterestRate = p_Interest_Rate / 1200;
 
-    -- Calculate number of payments (months)
     SET numberOfPayments = p_Loan_Period;
 
-    -- Calculate monthly installment using the amortizing loan formula
     SET monthlyInstallment = (p_Loan_Value * monthlyInterestRate) / (1 - POW(1 + monthlyInterestRate, -numberOfPayments));
 
-    -- Loop through the number of payments to create each installment
     WHILE i <= numberOfPayments DO
-        -- Calculate the due date for each installment
         SET dueDate = DATE_ADD(p_Start_Date, INTERVAL i MONTH);
 
-        -- Insert the installment record into the LoanInstallments table
         INSERT INTO LoanInstallments (Loan_ID, Branch_ID, Transaction_ID, DueDate, Value)
         VALUES (p_Loan_ID, p_Branch_ID, NULL, dueDate, ROUND(monthlyInstallment, 2));
 
-        -- Increment loop counter
         SET i = i + 1;
     END WHILE;
 
@@ -90,14 +81,12 @@ CREATE PROCEDURE GetTotalLoanValueByFD(IN p_FD_ID INT)
 BEGIN
     DECLARE totalLoanValue DECIMAL(15, 2) DEFAULT 0;
 
-    -- Calculate the total loan value
     SELECT SUM(l.LoanValue) INTO totalLoanValue
     FROM Loan l
     JOIN LoanApplication la ON l.Application_ID = la.Application_ID
     JOIN Online_loan_to_FD olf ON la.Application_ID = olf.Application_ID
     WHERE olf.FD_ID = p_FD_ID AND la.LoanType = 'Online';
 
-    -- Return the result
     SELECT IFNULL(totalLoanValue, 0) AS TotalLoanValue;
 END$$
 
@@ -122,38 +111,30 @@ BEGIN
     DECLARE loanId INT;
     DECLARE applicationApproved INT DEFAULT 1;  -- Assuming the loan is approved
 
-    -- Get the total loan value already taken against the specified FD using the function
     SET existingLoans = GetTotalLoanValueByFD(p_FD_ID);
 
-    -- Get the fixed deposit details
     SELECT InitialAmount INTO fdInitialAmount
     FROM FD
     WHERE FD_ID = p_FD_ID;
 
-    -- Calculate the maximum loan value allowed (60% of FD amount)
     SET maxLoanValue = fdInitialAmount * 0.6;
 
-    -- Check if the requested loan value exceeds the allowed limit
     IF (existingLoans + p_LoanValue) > maxLoanValue THEN
         SIGNAL SQLSTATE '45000' 
         SET MESSAGE_TEXT = 'Requested loan value exceeds the maximum allowed limit ';
     ELSE
-        -- Insert loan application (assuming it's auto-approved)
         INSERT INTO LoanApplication (Branch_ID, Customer_ID, LoanPeriod, Date, LoanValue, Approved, LoanType)
         VALUES (p_Branch_ID, p_Customer_ID, p_LoanPeriod, p_StartDate, p_LoanValue, applicationApproved, 'Online');
         SET loanApplicationId = LAST_INSERT_ID();
 
-        -- Update loan application approval status
         UPDATE LoanApplication
         SET Approved = 1  -- Assuming the loan is approved after validation
         WHERE Application_ID = loanApplicationId;
 
-        -- Create the loan entry
         INSERT INTO Loan (Branch_ID, Customer_ID, LoanPeriod, InterestRate, Date, LoanValue, Application_ID)
         VALUES (p_Branch_ID, p_Customer_ID, p_LoanPeriod, p_InterestRate, CURDATE(), p_LoanValue, loanApplicationId);
         SET loanId = LAST_INSERT_ID();
 
-        -- Link the loan application to the FD
         INSERT INTO Online_loan_to_FD (Application_ID, FD_ID)
         VALUES (loanApplicationId, p_FD_ID);
     END IF;
@@ -168,65 +149,111 @@ DELIMITER $$
 
 CREATE PROCEDURE ApplyMonthlyInterest()
 BEGIN
-    -- Temporary table to store the interest transactions with a primary key
     CREATE TEMPORARY TABLE TempInterestTransactions (
         Transaction_ID INT AUTO_INCREMENT PRIMARY KEY,
         Account_ID INT,
         InterestAmount DECIMAL(15, 2)
     );
 
-    -- Update the balance for 'Children' plan (12% interest, no minimum balance)
     UPDATE Account
     SET Balance = Balance + (Balance * 0.12 / 100)
     WHERE Type = 'Savings' AND Plan = 'Children' AND Account_ID IS NOT NULL;
 
-    -- Add entries to the temporary table for the 'Children' plan
     INSERT INTO TempInterestTransactions (Account_ID, InterestAmount)
     SELECT Account_ID, (Balance * 0.12 / 100)
     FROM Account
     WHERE Type = 'Savings' AND Plan = 'Children' AND Account_ID IS NOT NULL;
 
-    -- Update the balance for 'Teen' plan (11% interest, minimum balance 500)
     UPDATE Account
     SET Balance = Balance + (Balance * 0.11 / 100)
     WHERE Type = 'Savings' AND Plan = 'Teen' AND Balance >= 500 AND Account_ID IS NOT NULL;
 
-    -- Add entries to the temporary table for the 'Teen' plan
     INSERT INTO TempInterestTransactions (Account_ID, InterestAmount)
     SELECT Account_ID, (Balance * 0.11 / 100)
     FROM Account
     WHERE Type = 'Savings' AND Plan = 'Teen' AND Balance >= 500 AND Account_ID IS NOT NULL;
 
-    -- Update the balance for 'Adult' plan (10% interest, minimum balance 1000)
     UPDATE Account
     SET Balance = Balance + (Balance * 0.10 / 100)
     WHERE Type = 'Savings' AND Plan = 'Adult' AND Balance >= 1000 AND Account_ID IS NOT NULL;
 
-    -- Add entries to the temporary table for the 'Adult' plan
     INSERT INTO TempInterestTransactions (Account_ID, InterestAmount)
     SELECT Account_ID, (Balance * 0.10 / 100)
     FROM Account
     WHERE Type = 'Savings' AND Plan = 'Adult' AND Balance >= 1000 AND Account_ID IS NOT NULL;
 
-    -- Update the balance for 'Senior' plan (13% interest, minimum balance 1000)
     UPDATE Account
     SET Balance = Balance + (Balance * 0.13 / 100)
     WHERE Type = 'Savings' AND Plan = 'Senior' AND Balance >= 1000 AND Account_ID IS NOT NULL;
 
-    -- Add entries to the temporary table for the 'Senior' plan
     INSERT INTO TempInterestTransactions (Account_ID, InterestAmount)
     SELECT Account_ID, (Balance * 0.13 / 100)
     FROM Account
     WHERE Type = 'Savings' AND Plan = 'Senior' AND Balance >= 1000 AND Account_ID IS NOT NULL;
 
-    -- Insert transactions from the temporary table into the Transaction table
     INSERT INTO Transaction (FromAccount, ToAccount, Date, Value, Type)
     SELECT NULL, Account_ID, CURDATE(), InterestAmount, 'Interest'
     FROM TempInterestTransactions;
 
-    -- Drop the temporary table to free up resources
     DROP TEMPORARY TABLE TempInterestTransactions;
 
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE MakeLoanPayment (
+    IN p_Installment_ID INT,
+    IN p_Account_ID INT,
+    IN p_Amount DECIMAL(15, 2)
+)
+proc_block:BEGIN
+    DECLARE v_Transaction_ID INT;
+	DECLARE v_Installment_ID INT;
+    DECLARE v_isPaid INT DEFAULT 0;
+
+    START TRANSACTION;
+    
+	SELECT Installment_ID INTO v_Installment_ID
+    FROM LoanInstallments
+    WHERE Installment_ID = p_Installment_ID;
+    
+    IF v_Installment_ID IS NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Installment doesnt exist.';
+        ROLLBACK;
+		LEAVE proc_block;
+    END IF;
+
+    SELECT Transaction_ID INTO v_isPaid
+    FROM LoanInstallments
+    WHERE Installment_ID = p_Installment_ID;
+
+    IF v_isPaid IS NOT NULL THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Installment already paid.';
+        ROLLBACK;
+		LEAVE proc_block;
+    END IF;
+
+    INSERT INTO Transaction (FromAccount, ToAccount, Date, Value, Type)
+    VALUES (p_Account_ID, 1, NOW(), p_Amount, 'Loan Payment');
+
+    SET v_Transaction_ID = LAST_INSERT_ID();
+    IF v_Transaction_ID IS NULL THEN
+        ROLLBACK;
+		LEAVE proc_block;
+    END IF;
+
+    UPDATE LoanInstallments
+    SET Transaction_ID = v_Transaction_ID
+    WHERE Installment_ID = p_Installment_ID;
+
+    IF ROW_COUNT() = 0 THEN
+        ROLLBACK;
+		LEAVE proc_block;
+    END IF;
+
+    COMMIT;
 END$$
 
 DELIMITER ;
