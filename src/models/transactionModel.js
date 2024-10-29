@@ -75,7 +75,7 @@ const Transaction = {
   outgoingReport: async (id,startDate,endDate) => {
     try {
       const [rows] = await db.query(
-        'SELECT FromAccount,ToAccount,Date,Value,Account.Type FROM Transaction inner join Account on Transaction.FromAccount = Account.Account_ID WHERE Branch_ID = branchId_by_managerId(?) and (Date >= ? AND Date <= ?)', 
+        'CALL GetOutgoingReport(?, ?, ?)', 
         [id,startDate,endDate]);
       return rows;
     } catch (error) {
@@ -86,7 +86,7 @@ const Transaction = {
   incomingReport: async (id,startDate,endDate) => {
     try {
       const [rows] = await db.query(
-        'SELECT FromAccount,ToAccount,Date,Value,Account.Type FROM Transaction inner join Account on Transaction.ToAccount = Account.Account_ID WHERE Branch_ID = branchId_by_managerId(?) and (Date >= ? AND Date <= ?)', 
+        'CALL GetIncomingReport(?, ?, ?)', 
         [id,startDate,endDate]);
       return rows;
     } catch (error) {
@@ -105,13 +105,8 @@ const Transaction = {
   
       // Now fetch the transaction totals for the branch
       const [rows] = await db.query(
-        `SELECT 
-          SUM(CASE WHEN FromAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = ?) THEN Value ELSE 0 END) AS totalOutgoing,
-          SUM(CASE WHEN ToAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = ?) THEN Value ELSE 0 END) AS totalIncoming
-        FROM Transaction
-        WHERE FromAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = ?)
-           OR ToAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = ?)`,
-        [branchId, branchId, branchId, branchId]
+        `CALL GetBranchTransactionSummary(?)`,
+        [branchId]
       );
       
       return rows[0];

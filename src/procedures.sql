@@ -230,3 +230,76 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+DELIMITER //
+
+CREATE PROCEDURE GetBranchTransactionSummary(IN branchId INT)
+BEGIN
+    SELECT 
+        SUM(CASE WHEN FromAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = branchId) THEN Value ELSE 0 END) AS totalOutgoing,
+        SUM(CASE WHEN ToAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = branchId) THEN Value ELSE 0 END) AS totalIncoming
+    FROM Transaction
+    WHERE FromAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = branchId)
+       OR ToAccount IN (SELECT Account_ID FROM Account WHERE Branch_ID = branchId);
+END //
+
+DELIMITER ;
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE GetOutgoingReport(
+    IN managerId INT, 
+    IN startDate DATE, 
+    IN endDate DATE
+)
+BEGIN
+    SELECT 
+        FromAccount, 
+        ToAccount, 
+        Date, 
+        Value, 
+        Account.Type 
+    FROM 
+        Transaction 
+    INNER JOIN 
+        Account 
+    ON 
+        Transaction.FromAccount = Account.Account_ID 
+    WHERE 
+        Account.Branch_ID = branchId_by_managerId(managerId) 
+        AND (Date >= startDate AND Date <= endDate);
+END //
+
+DELIMITER ;
+
+
+
+DELIMITER //
+
+CREATE PROCEDURE GetIncomingReport(
+    IN managerId INT, 
+    IN startDate DATE, 
+    IN endDate DATE
+)
+BEGIN
+    SELECT 
+        FromAccount, 
+        ToAccount, 
+        Date, 
+        Value, 
+        Account.Type 
+    FROM 
+        Transaction 
+    INNER JOIN 
+        Account 
+    ON 
+        Transaction.ToAccount = Account.Account_ID 
+    WHERE 
+        Account.Branch_ID = branchId_by_managerId(managerId) 
+        AND (Date >= startDate AND Date <= endDate);
+END //
+
+DELIMITER ;
