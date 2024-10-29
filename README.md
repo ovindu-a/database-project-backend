@@ -530,5 +530,250 @@ These are the API endpoints for managing loan records in our system.
 #### Response:
 - **Success** (`201`): JSON object with details of the newly created quick loan.
 - **Error** (`500`): JSON object with error message.
+- 
+### API Endpoints for Transaction Management
+
+These are descriptions of each API endpoint for managing transaction records.
+
+### 1. Get All Transactions
+- **Endpoint**: GET `https://ourbankURL/api/transactions/`
+- **Description**: Retrieves a list of all transaction records from the database.
+
+#### Response:
+- **Success** (`200`): JSON array containing all transaction records.
+- **Error** (`500`): JSON object with error message.
+
+### 2. Create a New Transaction
+- **Endpoint**: POST `https://ourbankURL/api/transactions/`
+- **Description**: Creates a new transaction record with details provided in the request body.
+
+#### Request Body:
+- `FromAccount` (required): ID of the account sending the transaction.
+- `ToAccount` (required): ID of the account receiving the transaction.
+- `Date` (required): Date of the transaction.
+- `Value` (required): Amount of the transaction.
+- `Type` (required): Type of transaction 
+
+#### Response:
+- **Success** (`201`): JSON object with details of the newly created transaction.
+- **Error** (`500`): JSON object with error message.
+
+### 3. Get Transaction by ID
+- **Endpoint**: GET `https://ourbankURL/api/transactions/:id`
+- **Description**: Retrieves a specific transaction record by its ID.
+
+#### Path Parameter:
+  - `id` (required): The unique ID of the transaction.
+
+#### Response:
+- **Success** (`200`): JSON object containing the transaction details.
+- **Not Found** (`404`): JSON message indicating "Transaction not found."
+- **Error** (`500`): JSON object with error message.
+
+### 4. Update Transaction by ID
+- **Endpoint**: PUT `https://ourbankURL/api/transactions/:id`
+- **Description**: Updates an existing transaction record by its ID with details provided in the request body.
+
+#### Path Parameter:
+  - `id` (required): The unique ID of the transaction to update.
+
+#### Request Body:
+- JSON object containing the fields to update 
+
+#### Response:
+- **Success** (`200`): JSON message indicating "Transaction updated successfully."
+- **Not Found** (`404`): JSON message indicating "Transaction not found."
+- **Error** (`500`): JSON object with error message.
+
+### 5. Delete Transaction by ID
+- **Endpoint**: DELETE `https://ourbankURL/api/transactions/:id`
+- **Description**: Deletes a transaction record by its ID.
+
+#### Path Parameter:
+  - `id` (required): The unique ID of the transaction to delete.
+
+#### Response:
+- **Success** (`200`): JSON message indicating "Transaction deleted successfully."
+- **Not Found** (`404`): JSON message indicating "Transaction not found."
+- **Error** (`500`): JSON object with error message.
+
+### 6. Get Transactions by Sent Account
+- **Endpoint**: GET `https://ourbankURL/api/transactions/fromAccount/:account`
+- **Description**: Retrieves all transactions sent from a specified account.
+
+#### Path Parameter:
+  - `account` (required): The unique ID of the sending account.
+
+#### Response:
+- **Success** (`200`): JSON array containing transactions sent from the specified account.
+- **Error** (`500`): JSON object with error message.
+
+### 7. Get Transactions by Received Account
+- **Endpoint**: GET `https://ourbankURL/api/transactions/toAccount/:account`
+- **Description**: Retrieves all transactions received by a specified account.
+
+#### Path Parameter:
+  - `account` (required): The unique ID of the receiving account.
+
+#### Response:
+- **Success** (`200`): JSON array containing transactions received by the specified account.
+- **Error** (`500`): JSON object with error message.
+
+### 8. Get All Transactions by Account
+- **Endpoint**: GET `https://ourbankURL/api/transactions/byAccount/:account`
+- **Description**: Retrieves all transactions related to a specified account, including both sent and received transactions.
+
+#### Path Parameter:
+  - `account` (required): The unique ID of the account.
+
+#### Response:
+- **Success** (`200`): JSON array containing all transactions associated with the account.
+- **Error** (`500`): JSON object with error message.
+
+### 9. Get Outgoing Report for Manager
+- **Endpoint**: POST `https://ourbankURL/api/transactions/outgoingReport/:id`
+- **Description**: Retrieves a report of all outgoing transactions within a specified date range for a manager's branch.
+
+#### Path Parameter:
+  - `id` (required): The unique ID of the manager.
+
+#### Request Body:
+- `startDate` (required): Start date of the report period.
+- `endDate` (required): End date of the report period.
+
+#### Response:
+- **Success** (`200`): JSON array of outgoing transactions within the date range.
+- **Error** (`500`): JSON object with error message.
+
+### 10. Get Incoming Report for Manager
+- **Endpoint**: POST `https://ourbankURL/api/transactions/incomingReport/:id`
+- **Description**: Retrieves a report of all incoming transactions within a specified date range for a manager's branch.
+
+#### Path Parameter:
+  - `id` (required): The unique ID of the manager.
+
+#### Request Body:
+- `startDate` (required): Start date of the report period.
+- `endDate` (required): End date of the report period.
+
+#### Response:
+- **Success** (`200`): JSON array of incoming transactions within the date range.
+- **Error** (`500`): JSON object with error message.
+
+### 11. Get Transaction Totals for Manager
+- **Endpoint**: GET `https://ourbankURL/api/transactions/transaction-totals/:managerId`
+- **Description**: Retrieves the total amount of all transactions managed by a specific branch manager.
+
+#### Path Parameter:
+  - `managerId` (required): The unique ID of the manager.
+
+#### Response:
+- **Success** (`200`): JSON object containing the total transaction value.
+- **Error** (`500`): JSON object with error message.
+
+### API Endpoints for Loan Application Management
+
+### 1. Get All Loan Applications
+- **Endpoint**: GET `https://ourbankURL/api/loanApplications/`
+- **Description**: Retrieves a list of all loan applications.
+
+#### Response:
+- **Success** (`200`): JSON array containing all loan application records.
+- **Error** (`500`): JSON object with error message.
+
+### 2. Create a New Loan Application
+- **Endpoint**: POST `https://ourbankURL/api/loanApplications/`
+- **Description**: Creates a new loan application with the details provided in the request body.
+
+#### Request Body:
+- `Branch_ID` (required): ID of the branch associated with the application.
+- `Customer_ID` (required): ID of the customer applying for the loan.
+- `LoanPeriod` (required): Duration of the loan period.
+- `Date` (required): Application date.
+- `LoanValue` (required): Amount requested for the loan.
+- `Approved` (required): Approval status of the application.
+- `LoanType` (required): Type of loan being applied for.
+
+#### Response:
+- **Success** (`201`): JSON object with details of the newly created loan application.
+- **Error** (`500`): JSON object with error message.
+
+### 3. Get Loan Application by ID
+- **Endpoint**: GET `https://ourbankURL/api/loanApplications/:id`
+- **Description**: Retrieves a specific loan application by its ID.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the loan application.
+
+#### Response:
+- **Success** (`200`): JSON object containing the loan application details.
+- **Not Found** (`404`): JSON message indicating "Loan application not found."
+- **Error** (`500`): JSON object with error message.
+
+### 4. Update Loan Application by ID
+- **Endpoint**: PUT `https://ourbankURL/api/loanApplications/:id`
+- **Description**: Updates an existing loan application by its ID.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the loan application to update.
+
+#### Request Body:
+- JSON object with the fields to update.
+
+#### Response:
+- **Success** (`200`): JSON message indicating "Loan application updated successfully."
+- **Not Found** (`404`): JSON message indicating "Loan application not found."
+- **Error** (`500`): JSON object with error message.
+
+### 5. Delete Loan Application by ID
+- **Endpoint**: DELETE `https://ourbankURL/api/loanApplications/:id`
+- **Description**: Deletes a loan application by its ID.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the loan application to delete.
+
+#### Response:
+- **Success** (`200`): JSON message indicating "Loan application deleted successfully."
+- **Not Found** (`404`): JSON message indicating "Loan application not found."
+- **Error** (`500`): JSON object with error message.
+
+### 6. Get Loan Applications by Manager ID
+- **Endpoint**: GET `https://ourbankURL/api/loanApplications/manager/:id`
+- **Description**: Retrieves all loan applications associated with a specific manager's branch.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the manager.
+
+#### Response:
+- **Success** (`200`): JSON array containing loan applications for the manager's branch.
+- **Error** (`500`): JSON object with error message.
+
+### 7. Get Pending Loan Applications by Customer ID
+- **Endpoint**: GET `https://ourbankURL/api/loanApplications/pending/:customerId`
+- **Description**: Retrieves all pending loan applications for a specific customer.
+
+#### Path Parameter:
+  - `customerId` (required): Unique ID of the customer.
+
+#### Response:
+- **Success** (`200`): JSON array containing pending loan applications for the specified customer.
+- **Error** (`500`): JSON object with error message.
+
+### 8. Approve Loan Application
+- **Endpoint**: POST `https://ourbankURL/api/loanApplications/approve/:id`
+- **Description**: Approves a loan application by its ID and, if approved, creates a new loan record.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the loan application to approve.
+
+#### Request Body:
+- `Manager_ID` (required): ID of the manager approving the loan.
+- `Approved` (required): Approval status 
+
+#### Response:
+- **Success** (`201`): JSON message indicating "Loan application approved successfully and loan created."
+- **Not Authorized** (`403`): JSON message indicating "Manager is not authorized to approve this loan application."
+- **Not Found** (`404`): JSON message indicating "Loan application not found."
+- **Error** (`500`): JSON object with error message.
 
  
