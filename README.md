@@ -138,6 +138,262 @@ banking-system/
 
 ## **API Endpoints** 
 
+### API Endpoints for Bank Account Management
+ 
+### 1. `getAllAccounts`
+- **Endpoint**: GET `https://ourbankURL/api/accounts`
+- **Description**: Fetches and returns all accounts from the database.
+- **Response**:
+  - Returns a JSON array of all accounts.
+  - Sends a `500` status response with an error message if an error occurs.
+
+### 2. `createAccount`
+- **Endpoint**: POST `https://ourbankURL/api/accounts`
+- **Description**: Creates a new bank account using data from the request body.
+- **Features**:
+  - If the account type is 'Savings', it generates monthly interest transactions based on the provided plan.
+- **Request Body**:
+  - `Branch_ID`: The ID of the branch.
+  - `Customer_ID`: The ID of the customer.
+  - `Type`: The type of account (e.g., Savings).
+  - `Balance`: The initial balance for the account.
+  - `OpeningDate`: The date when the account is opened.
+  - `Plan`: The plan associated with the account (if applicable).
+- **Response**:
+  - Returns the details of the newly created account upon success.
+  - Sends an error message if the account creation fails.
+
+### 3. `getAccountById`
+- **Endpoint**: GET `https://ourbankURL/api/accounts/customer/:customer`
+- **Description**: Retrieves a specific account by its ID.
+- **Response**:
+  - Returns the account details if found.
+  - Sends a `404` status with a 'not found' message if the account does not exist.
+
+### 4. `getByCustomer`
+- **Endpoint**: GET `https://ourbankURL/api/accounts/:id`
+- **Description**: Fetches all accounts associated with a specific customer ID.
+- **Response**:
+  - Returns the accounts related to the specified customer.
+  - Sends an error message if an issue occurs during the retrieval process.
+
+### 5. `withdrawFromAccount`
+- **Endpoint**: POST `https://ourbankURL/api/accounts/withdraw/:accountId`
+- **Description**: Handles the withdrawal process from a specified account.
+- **Request Body**:
+  - `amount`: The amount to withdraw.
+- **Features**:
+  - Checks the account balance before allowing the withdrawal.
+  - Creates a transaction record for the withdrawal (assumed to be an ATM withdrawal).
+- **Response**:
+  - Returns a success message upon successful withdrawal.
+  - Sends appropriate error messages for insufficient funds or account issues.
+
+
+### API Endpoints for Branch Management
+
+### 1. `getAllBranches`
+- **Endpoint**: GET `https://ourbankURL/api/branches/`
+- **Description**: Fetches and returns all branches from the database.
+- **Response**:
+  - Returns a JSON array of all branches.
+  - Sends a `500` status response with an error message if an error occurs.
+
+### 2. `createBranch`
+- **Endpoint**: POST `https://ourbankURL/api/branches/`
+- **Description**: Creates a new branch using data from the request body.
+- **Request Body**:
+  - `Name`: The name of the branch.
+  - `Address`: The address of the branch.
+  - `Manager_ID`: The ID of the manager associated with the branch.
+- **Validation**:
+  - Checks if the specified manager exists. If not, it returns a `400` status with an error message.
+- **Response**:
+  - Returns the details of the newly created branch upon success.
+  - Sends an error message if the branch creation fails.
+
+### 3. `getBranchById`
+- **Endpoint**: GET `https://ourbankURL/api/branches/:id`
+- **Description**: Retrieves a specific branch by its ID.
+- **Response**:
+  - Returns the branch details if found.
+  - Sends a `404` status with a 'Branch not found' message if the branch does not exist.
+
+### 4. `updateBranch`
+- **Endpoint**: PUT `https://ourbankURL/api/branches/:id`
+- **Description**: Updates the details of a specific branch.
+- **Request Body**:
+  - Contains the updates for the branch (e.g., name, address, manager ID).
+- **Response**:
+  - Returns a success message upon successful update.
+  - Sends a `404` status with a 'Branch not found' message if the branch does not exist.
+
+### 5. `deleteBranch`
+- **Endpoint**:  `https://ourbankURL/api/branches/:id`
+- **Description**: Deletes a specific branch by its ID.
+- **Response**:
+  - Returns a success message upon successful deletion.
+  - Sends a `404` status with a 'Branch not found' message if the branch does not exist.
+ 
+
+### API Endpoints for Manager Management
+ 
+### 1. `getAllManagers`
+- **Endpoint**: GET `https://ourbankURL/api/managers/`
+- **Description**: Fetches and returns all managers from the database.
+- **Response**:
+  - Returns a JSON array of all managers.
+  - Sends a `500` status response with an error message if an error occurs.
+
+### 2. `createManager`
+- **Endpoint**: POST `https://ourbankURL/api/managers/`
+- **Description**: Creates a new manager using data from the request body.
+- **Request Body**:
+  - `name`: The name of the manager.
+  - `username`: The username for login.
+  - `password`: The password for login (hashed before storing).
+- **Response**:
+  - Returns details of the newly created manager upon success.
+  - Sends an error message if manager creation fails.
+
+### 3. `getManagerById`
+- **Endpoint**: GET `https://ourbankURL/api/managers/:id`
+- **Description**: Retrieves a specific manager by their ID.
+- **Response**:
+  - Returns manager details if found.
+  - Sends a `404` status with a 'Manager not found' message if the manager does not exist.
+
+### 4. `updateManagerBranchId`
+- **Endpoint**: PUT `https://ourbankURL/api/managers/:id`
+- **Description**: Updates the branch ID associated with a specific manager.
+- **Request Body**:
+  - `Branch_ID`: The new branch ID to be associated with the manager.
+- **Response**:
+  - Returns a success message upon successful update.
+  - Sends a `404` status if the manager is not found.
+
+### 5. `deleteManager`
+- **Endpoint**: DELETE `https://ourbankURL/api/managers/:id`
+- **Description**: Deletes a specific manager by their ID.
+- **Response**:
+  - Returns a success message upon successful deletion.
+  - Sends a `404` status with a 'Manager not found' message if the manager does not exist.
+
+### 6. `loginManager`
+- **Endpoint**: POST `https://ourbankURL/api/managers/login`
+- **Description**: Authenticates a manager using username and password.
+- **Request Body**:
+  - `username`: The username for login.
+  - `password`: The password for login.
+- **Features**:
+  - Compares the provided password with the stored hashed password.
+  - Generates an OTP and sends it to the manager's email for two-factor authentication.
+- **Response**:
+  - Returns a success message and the manager's ID upon successful authentication.
+
+### 7. `verifyOtp`
+- **Endpoint**: POST `https://ourbankURL/api/managers//verify-otp`
+- **Description**: Verifies the OTP sent to the manager's email during login.
+- **Request Body**:
+  - `Manager_ID`: The ID of the manager.
+  - `otp`: The OTP provided by the manager.
+- **Response**:
+  - Returns a success message and logs the manager in upon successful OTP verification.
+  - Sends a `401` status with an 'Invalid OTP' message if the OTP does not match.
+ 
+
+### API Endpoints for Customer Management
+
+### 1. `getAllCustomers`
+- **Endpoint**: GET `https://ourbankURL/api/customers/`
+- **Description**: Fetches all customers from the database.
+- **Response**:
+  - Returns a JSON array of all customers.
+  - Sends a `500` status response with an error message if an error occurs.
+
+### 2. `createCustomer`
+- **Endpoint**: POST `https://ourbankURL/api/customers/`
+- **Description**: Creates a new customer with the given details.
+- **Request Body**:
+  - `Name`: The customer's name.
+  - `NIC`: The customer's national ID number.
+  - `Address`: The customer's address.
+  - `username`: Username for customer login.
+  - `password`: Password for customer login (hashed before storing).
+- **Response**:
+  - Returns the details of the newly created customer.
+  - Sends an error message if the creation fails.
+
+### 3. `getCustomerById`
+- **Endpoint**: GET `https://ourbankURL/api/customers/:id`
+- **Description**: Retrieves a specific customer by their ID.
+- **Response**:
+  - Returns the customer details if found.
+  - Sends a `404` status with a 'Customer not found' message if the customer does not exist.
+
+### 4. `updateCustomer`
+- **Endpoint**: PUT `https://ourbankURL/api/customers/:id`
+- **Description**: Updates a customer's information.
+- **Request Params**:
+  - `id`: Customer ID to update.
+- **Request Body**:
+  - JSON object containing fields to update.
+- **Response**:
+  - Returns a success message upon successful update.
+  - Sends a `404` status if the customer is not found.
+
+### 5. `deleteCustomer`
+- **Endpoint**: DELETE `https://ourbankURL/api/customers/:id`
+- **Description**: Deletes a customer by their ID.
+- **Response**:
+  - Returns a success message upon successful deletion.
+  - Sends a `404` status with a 'Customer not found' message if the customer does not exist.
+
+### 6. `loginCustomer`
+- **Endpoint**: POST `https://ourbankURL/api/customers/login`
+- **Description**: Authenticates a customer using username and password.
+- **Request Body**:
+  - `username`: Customer’s username.
+  - `password`: Customer’s password.
+- **Features**:
+  - Validates the password against the stored hashed password.
+  - Generates an OTP and sends it to the customer’s registered email.
+- **Response**:
+  - Returns a message indicating OTP sent and Customer ID upon successful authentication.
+  - Sends an error message for invalid username/password.
+
+### 7. `verifyOtp`
+- **Endpoint**: POST `https://ourbankURL/api/customers/verify-otp`
+- **Description**: Verifies the OTP sent to the customer during login.
+- **Request Body**:
+  - `Customer_ID`: Customer's ID.
+  - `otp`: The OTP received by the customer.
+- **Response**:
+  - Generates a JWT token and sets it as an HTTP-only cookie upon successful OTP verification.
+  - Sends a `401` status with an 'Invalid OTP' message if the OTP does not match.
+
+### 8. `getCustomerByLoanId`
+- **Endpoint**: GET `https://ourbankURL/api/customers/by-loan/:id`
+- **Description**: Retrieves customer details along with associated loan information based on a given loan ID.
+- **Request Params**:
+  - `id`: Loan ID.
+- **Response**:
+  - Returns a JSON object with combined customer and loan information if both exist.
+  - Sends a `404` status if the customer or loan is not found.
+
+### 9. `getBriefInfoByCustomerId`
+- **Endpoint**: GET `https://ourbankURL/api/customers/brief-info/:id`
+- **Description**: Retrieves brief information for a customer, including accounts, loans, and fixed deposits.
+- **Request Params**:
+  - `id`: Customer ID.
+- **Response**:
+  - Returns a JSON object containing brief customer information, including:
+    - `user`: Customer details.
+    - `accounts`: Account details.
+    - `loans`: Loan details.
+    - `fds`: Fixed deposit details (only ID and initial amount).
+
+
 ### API Endpoints for FD Management
 Here are the endpoints available for managing Fixed Deposit (FD) records in the system.
 
@@ -274,189 +530,250 @@ These are the API endpoints for managing loan records in our system.
 #### Response:
 - **Success** (`201`): JSON object with details of the newly created quick loan.
 - **Error** (`500`): JSON object with error message.
+- 
+### API Endpoints for Transaction Management
 
-### Bank Account Management API
+These are descriptions of each API endpoint for managing transaction records.
 
-#### Overview of Controller Functions
+### 1. Get All Transactions
+- **Endpoint**: GET `https://ourbankURL/api/transactions/`
+- **Description**: Retrieves a list of all transaction records from the database.
 
-##### 1. `getAllAccounts`
-- **Endpoint**: GET `https://ourbankURL/api/accounts`
-- **Description**: Fetches and returns all accounts from the database.
-- **Response**:
-  - Returns a JSON array of all accounts.
-  - Sends a `500` status response with an error message if an error occurs.
+#### Response:
+- **Success** (`200`): JSON array containing all transaction records.
+- **Error** (`500`): JSON object with error message.
 
-##### 2. `createAccount`
-- **Endpoint**: POST `https://ourbankURL/api/accounts`
-- **Description**: Creates a new bank account using data from the request body.
-- **Features**:
-  - If the account type is 'Savings', it generates monthly interest transactions based on the provided plan.
-- **Request Body**:
-  - `Branch_ID`: The ID of the branch.
-  - `Customer_ID`: The ID of the customer.
-  - `Type`: The type of account (e.g., Savings).
-  - `Balance`: The initial balance for the account.
-  - `OpeningDate`: The date when the account is opened.
-  - `Plan`: The plan associated with the account (if applicable).
-- **Response**:
-  - Returns the details of the newly created account upon success.
-  - Sends an error message if the account creation fails.
+### 2. Create a New Transaction
+- **Endpoint**: POST `https://ourbankURL/api/transactions/`
+- **Description**: Creates a new transaction record with details provided in the request body.
 
-##### 3. `getAccountById`
-- **Endpoint**: GET `https://ourbankURL/api/accounts/customer/:customer`
-- **Description**: Retrieves a specific account by its ID.
-- **Response**:
-  - Returns the account details if found.
-  - Sends a `404` status with a 'not found' message if the account does not exist.
+#### Request Body:
+- `FromAccount` (required): ID of the account sending the transaction.
+- `ToAccount` (required): ID of the account receiving the transaction.
+- `Date` (required): Date of the transaction.
+- `Value` (required): Amount of the transaction.
+- `Type` (required): Type of transaction 
 
-##### 4. `getByCustomer`
-- **Endpoint**: GET `https://ourbankURL/api/accounts/:id`
-- **Description**: Fetches all accounts associated with a specific customer ID.
-- **Response**:
-  - Returns the accounts related to the specified customer.
-  - Sends an error message if an issue occurs during the retrieval process.
+#### Response:
+- **Success** (`201`): JSON object with details of the newly created transaction.
+- **Error** (`500`): JSON object with error message.
 
-##### 5. `withdrawFromAccount`
-- **Endpoint**: POST `https://ourbankURL/api/accounts/withdraw/:accountId`
-- **Description**: Handles the withdrawal process from a specified account.
-- **Request Body**:
-  - `amount`: The amount to withdraw.
-- **Features**:
-  - Checks the account balance before allowing the withdrawal.
-  - Creates a transaction record for the withdrawal (assumed to be an ATM withdrawal).
-- **Response**:
-  - Returns a success message upon successful withdrawal.
-  - Sends appropriate error messages for insufficient funds or account issues.
+### 3. Get Transaction by ID
+- **Endpoint**: GET `https://ourbankURL/api/transactions/:id`
+- **Description**: Retrieves a specific transaction record by its ID.
 
+#### Path Parameter:
+  - `id` (required): The unique ID of the transaction.
 
+#### Response:
+- **Success** (`200`): JSON object containing the transaction details.
+- **Not Found** (`404`): JSON message indicating "Transaction not found."
+- **Error** (`500`): JSON object with error message.
 
-### Branch Management API
+### 4. Update Transaction by ID
+- **Endpoint**: PUT `https://ourbankURL/api/transactions/:id`
+- **Description**: Updates an existing transaction record by its ID with details provided in the request body.
 
-#### Overview of Controller Functions
+#### Path Parameter:
+  - `id` (required): The unique ID of the transaction to update.
 
-##### 1. `getAllBranches`
-- **Endpoint**: GET `https://ourbankURL/api/branches/`
-- **Description**: Fetches and returns all branches from the database.
-- **Response**:
-  - Returns a JSON array of all branches.
-  - Sends a `500` status response with an error message if an error occurs.
+#### Request Body:
+- JSON object containing the fields to update 
 
-##### 2. `createBranch`
-- **Endpoint**: POST `https://ourbankURL/api/branches/`
-- **Description**: Creates a new branch using data from the request body.
-- **Request Body**:
-  - `Name`: The name of the branch.
-  - `Address`: The address of the branch.
-  - `Manager_ID`: The ID of the manager associated with the branch.
-- **Validation**:
-  - Checks if the specified manager exists. If not, it returns a `400` status with an error message.
-- **Response**:
-  - Returns the details of the newly created branch upon success.
-  - Sends an error message if the branch creation fails.
+#### Response:
+- **Success** (`200`): JSON message indicating "Transaction updated successfully."
+- **Not Found** (`404`): JSON message indicating "Transaction not found."
+- **Error** (`500`): JSON object with error message.
 
-##### 3. `getBranchById`
-- **Endpoint**: GET `https://ourbankURL/api/branches/:id`
-- **Description**: Retrieves a specific branch by its ID.
-- **Response**:
-  - Returns the branch details if found.
-  - Sends a `404` status with a 'Branch not found' message if the branch does not exist.
+### 5. Delete Transaction by ID
+- **Endpoint**: DELETE `https://ourbankURL/api/transactions/:id`
+- **Description**: Deletes a transaction record by its ID.
 
-##### 4. `updateBranch`
-- **Endpoint**: PUT `https://ourbankURL/api/branches/:id`
-- **Description**: Updates the details of a specific branch.
-- **Request Body**:
-  - Contains the updates for the branch (e.g., name, address, manager ID).
-- **Response**:
-  - Returns a success message upon successful update.
-  - Sends a `404` status with a 'Branch not found' message if the branch does not exist.
+#### Path Parameter:
+  - `id` (required): The unique ID of the transaction to delete.
 
-##### 5. `deleteBranch`
-- **Endpoint**:  `https://ourbankURL/api/branches/:id`
-- **Description**: Deletes a specific branch by its ID.
-- **Response**:
-  - Returns a success message upon successful deletion.
-  - Sends a `404` status with a 'Branch not found' message if the branch does not exist.
+#### Response:
+- **Success** (`200`): JSON message indicating "Transaction deleted successfully."
+- **Not Found** (`404`): JSON message indicating "Transaction not found."
+- **Error** (`500`): JSON object with error message.
+
+### 6. Get Transactions by Sent Account
+- **Endpoint**: GET `https://ourbankURL/api/transactions/fromAccount/:account`
+- **Description**: Retrieves all transactions sent from a specified account.
+
+#### Path Parameter:
+  - `account` (required): The unique ID of the sending account.
+
+#### Response:
+- **Success** (`200`): JSON array containing transactions sent from the specified account.
+- **Error** (`500`): JSON object with error message.
+
+### 7. Get Transactions by Received Account
+- **Endpoint**: GET `https://ourbankURL/api/transactions/toAccount/:account`
+- **Description**: Retrieves all transactions received by a specified account.
+
+#### Path Parameter:
+  - `account` (required): The unique ID of the receiving account.
+
+#### Response:
+- **Success** (`200`): JSON array containing transactions received by the specified account.
+- **Error** (`500`): JSON object with error message.
+
+### 8. Get All Transactions by Account
+- **Endpoint**: GET `https://ourbankURL/api/transactions/byAccount/:account`
+- **Description**: Retrieves all transactions related to a specified account, including both sent and received transactions.
+
+#### Path Parameter:
+  - `account` (required): The unique ID of the account.
+
+#### Response:
+- **Success** (`200`): JSON array containing all transactions associated with the account.
+- **Error** (`500`): JSON object with error message.
+
+### 9. Get Outgoing Report for Manager
+- **Endpoint**: POST `https://ourbankURL/api/transactions/outgoingReport/:id`
+- **Description**: Retrieves a report of all outgoing transactions within a specified date range for a manager's branch.
+
+#### Path Parameter:
+  - `id` (required): The unique ID of the manager.
+
+#### Request Body:
+- `startDate` (required): Start date of the report period.
+- `endDate` (required): End date of the report period.
+
+#### Response:
+- **Success** (`200`): JSON array of outgoing transactions within the date range.
+- **Error** (`500`): JSON object with error message.
+
+### 10. Get Incoming Report for Manager
+- **Endpoint**: POST `https://ourbankURL/api/transactions/incomingReport/:id`
+- **Description**: Retrieves a report of all incoming transactions within a specified date range for a manager's branch.
+
+#### Path Parameter:
+  - `id` (required): The unique ID of the manager.
+
+#### Request Body:
+- `startDate` (required): Start date of the report period.
+- `endDate` (required): End date of the report period.
+
+#### Response:
+- **Success** (`200`): JSON array of incoming transactions within the date range.
+- **Error** (`500`): JSON object with error message.
+
+### 11. Get Transaction Totals for Manager
+- **Endpoint**: GET `https://ourbankURL/api/transactions/transaction-totals/:managerId`
+- **Description**: Retrieves the total amount of all transactions managed by a specific branch manager.
+
+#### Path Parameter:
+  - `managerId` (required): The unique ID of the manager.
+
+#### Response:
+- **Success** (`200`): JSON object containing the total transaction value.
+- **Error** (`500`): JSON object with error message.
+
+### API Endpoints for Loan Application Management
+
+### 1. Get All Loan Applications
+- **Endpoint**: GET `https://ourbankURL/api/loanApplications/`
+- **Description**: Retrieves a list of all loan applications.
+
+#### Response:
+- **Success** (`200`): JSON array containing all loan application records.
+- **Error** (`500`): JSON object with error message.
+
+### 2. Create a New Loan Application
+- **Endpoint**: POST `https://ourbankURL/api/loanApplications/`
+- **Description**: Creates a new loan application with the details provided in the request body.
+
+#### Request Body:
+- `Branch_ID` (required): ID of the branch associated with the application.
+- `Customer_ID` (required): ID of the customer applying for the loan.
+- `LoanPeriod` (required): Duration of the loan period.
+- `Date` (required): Application date.
+- `LoanValue` (required): Amount requested for the loan.
+- `Approved` (required): Approval status of the application.
+- `LoanType` (required): Type of loan being applied for.
+
+#### Response:
+- **Success** (`201`): JSON object with details of the newly created loan application.
+- **Error** (`500`): JSON object with error message.
+
+### 3. Get Loan Application by ID
+- **Endpoint**: GET `https://ourbankURL/api/loanApplications/:id`
+- **Description**: Retrieves a specific loan application by its ID.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the loan application.
+
+#### Response:
+- **Success** (`200`): JSON object containing the loan application details.
+- **Not Found** (`404`): JSON message indicating "Loan application not found."
+- **Error** (`500`): JSON object with error message.
+
+### 4. Update Loan Application by ID
+- **Endpoint**: PUT `https://ourbankURL/api/loanApplications/:id`
+- **Description**: Updates an existing loan application by its ID.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the loan application to update.
+
+#### Request Body:
+- JSON object with the fields to update.
+
+#### Response:
+- **Success** (`200`): JSON message indicating "Loan application updated successfully."
+- **Not Found** (`404`): JSON message indicating "Loan application not found."
+- **Error** (`500`): JSON object with error message.
+
+### 5. Delete Loan Application by ID
+- **Endpoint**: DELETE `https://ourbankURL/api/loanApplications/:id`
+- **Description**: Deletes a loan application by its ID.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the loan application to delete.
+
+#### Response:
+- **Success** (`200`): JSON message indicating "Loan application deleted successfully."
+- **Not Found** (`404`): JSON message indicating "Loan application not found."
+- **Error** (`500`): JSON object with error message.
+
+### 6. Get Loan Applications by Manager ID
+- **Endpoint**: GET `https://ourbankURL/api/loanApplications/manager/:id`
+- **Description**: Retrieves all loan applications associated with a specific manager's branch.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the manager.
+
+#### Response:
+- **Success** (`200`): JSON array containing loan applications for the manager's branch.
+- **Error** (`500`): JSON object with error message.
+
+### 7. Get Pending Loan Applications by Customer ID
+- **Endpoint**: GET `https://ourbankURL/api/loanApplications/pending/:customerId`
+- **Description**: Retrieves all pending loan applications for a specific customer.
+
+#### Path Parameter:
+  - `customerId` (required): Unique ID of the customer.
+
+#### Response:
+- **Success** (`200`): JSON array containing pending loan applications for the specified customer.
+- **Error** (`500`): JSON object with error message.
+
+### 8. Approve Loan Application
+- **Endpoint**: POST `https://ourbankURL/api/loanApplications/approve/:id`
+- **Description**: Approves a loan application by its ID and, if approved, creates a new loan record.
+
+#### Path Parameter:
+  - `id` (required): Unique ID of the loan application to approve.
+
+#### Request Body:
+- `Manager_ID` (required): ID of the manager approving the loan.
+- `Approved` (required): Approval status 
+
+#### Response:
+- **Success** (`201`): JSON message indicating "Loan application approved successfully and loan created."
+- **Not Authorized** (`403`): JSON message indicating "Manager is not authorized to approve this loan application."
+- **Not Found** (`404`): JSON message indicating "Loan application not found."
+- **Error** (`500`): JSON object with error message.
+
  
-
-### Manager Management API
-
-#### Overview of Controller Functions
-
-##### 1. `getAllManagers`
-- **Endpoint**: GET `https://ourbankURL/api/managers/`
-- **Description**: Fetches and returns all managers from the database.
-- **Response**:
-  - Returns a JSON array of all managers.
-  - Sends a `500` status response with an error message if an error occurs.
-
-##### 2. `createManager`
-- **Endpoint**: POST `https://ourbankURL/api/managers/`
-- **Description**: Creates a new manager using data from the request body.
-- **Request Body**:
-  - `name`: The name of the manager.
-  - `username`: The username for login.
-  - `password`: The password for login (hashed before storing).
-- **Response**:
-  - Returns details of the newly created manager upon success.
-  - Sends an error message if manager creation fails.
-
-##### 3. `getManagerById`
-- **Endpoint**: GET `https://ourbankURL/api/managers/:id`
-- **Description**: Retrieves a specific manager by their ID.
-- **Response**:
-  - Returns manager details if found.
-  - Sends a `404` status with a 'Manager not found' message if the manager does not exist.
-
-##### 4. `updateManagerBranchId`
-- **Endpoint**: PUT `https://ourbankURL/api/managers/:id`
-- **Description**: Updates the branch ID associated with a specific manager.
-- **Request Body**:
-  - `Branch_ID`: The new branch ID to be associated with the manager.
-- **Response**:
-  - Returns a success message upon successful update.
-  - Sends a `404` status if the manager is not found.
-
-##### 5. `deleteManager`
-- **Endpoint**: DELETE `https://ourbankURL/api/managers/:id`
-- **Description**: Deletes a specific manager by their ID.
-- **Response**:
-  - Returns a success message upon successful deletion.
-  - Sends a `404` status with a 'Manager not found' message if the manager does not exist.
-
-##### 6. `loginManager`
-- **Endpoint**: POST `https://ourbankURL/api/managers/login`
-- **Description**: Authenticates a manager using username and password.
-- **Request Body**:
-  - `username`: The username for login.
-  - `password`: The password for login.
-- **Features**:
-  - Compares the provided password with the stored hashed password.
-  - Generates an OTP and sends it to the manager's email for two-factor authentication.
-- **Response**:
-  - Returns a success message and the manager's ID upon successful authentication.
-
-##### 7. `verifyOtp`
-- **Endpoint**: POST `https://ourbankURL/api/managers//verify-otp`
-- **Description**: Verifies the OTP sent to the manager's email during login.
-- **Request Body**:
-  - `Manager_ID`: The ID of the manager.
-  - `otp`: The OTP provided by the manager.
-- **Response**:
-  - Returns a success message and logs the manager in upon successful OTP verification.
-  - Sends a `401` status with an 'Invalid OTP' message if the OTP does not match.
-
-
-
-
- 
- 
-
- 
-
-
-
-
-
-
-
-

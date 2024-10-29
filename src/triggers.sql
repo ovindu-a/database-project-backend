@@ -2,14 +2,12 @@
 
 DELIMITER $$
 
--- BEFORE INSERT trigger to check transaction count
 CREATE TRIGGER CheckTransactionCountBeforeInsert
 BEFORE INSERT ON Transaction
 FOR EACH ROW
 BEGIN
     DECLARE transactionCount INT;
 
-    -- Count the number of transactions for the current month
     SELECT COUNT(*)
     INTO transactionCount
     FROM Transaction
@@ -18,7 +16,6 @@ BEGIN
       AND YEAR(Date) = YEAR(CURRENT_DATE());
 
 
-    -- Raise an error if the transaction count exceeds 5
     IF transactionCount >= 5 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Transaction limit for the current month exceeded';
@@ -33,14 +30,12 @@ CREATE TRIGGER UpdateAccountBalancesAfterTransaction
 AFTER INSERT ON Transaction
 FOR EACH ROW
 BEGIN
-    -- Update the balance of the from account (debit the amount)
     IF NEW.FromAccount IS NOT NULL THEN
         UPDATE Account
         SET Balance = Balance - NEW.Value
         WHERE Account_ID = NEW.FromAccount;
     END IF;
 
-    -- Update the balance of the to account (credit the amount)
     IF NEW.ToAccount IS NOT NULL THEN
         UPDATE Account
         SET Balance = Balance + NEW.Value
@@ -63,25 +58,18 @@ BEGIN
     DECLARE i INT DEFAULT 1;
     DECLARE dueDate DATE;
 
-    -- Calculate monthly interest rate
     SET monthlyInterestRate = NEW.InterestRate / 1200;
 
-    -- Calculate number of payments (months)
     SET numberOfPayments = NEW.LoanPeriod;
 
-    -- Calculate monthly installment using the amortizing loan formula
     SET monthlyInstallment = (NEW.LoanValue * (monthlyInterestRate)) / (1 - POW(1 + monthlyInterestRate, -numberOfPayments));
 
-    -- Loop through the number of payments to create each installment
     WHILE i <= numberOfPayments DO
-        -- Calculate the due date for each installment
         SET dueDate = DATE_ADD(NEW.Date, INTERVAL i MONTH);
 
-        -- Insert the installment record into the LoanInstallments table
         INSERT INTO LoanInstallments (Loan_ID, Branch_ID, Transaction_ID, DueDate, Value)
         VALUES (NEW.Loan_ID, NEW.Branch_ID, NULL, dueDate, ROUND(monthlyInstallment, 2));
 
-        -- Increment loop counter
         SET i = i + 1;
     END WHILE;
 END$$
@@ -97,8 +85,101 @@ ON SCHEDULE
     ON COMPLETION PRESERVE
 DO
 BEGIN
-    -- Call the procedure on the last day of every month
     CALL ApplyMonthlyInterest();
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER EnforceSavingsAccountBalanceOnInsert
+BEFORE INSERT ON Account
+FOR EACH ROW
+BEGIN
+    IF NEW.Type = 'Savings' THEN
+        CASE NEW.Plan
+            WHEN 'Children' THEN
+                IF NEW.Balance < 0 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Balance cannot be negative for Children plan';
+                END IF;
+
+            WHEN 'Teen' THEN
+                -- Teen: minimum balance of 500
+                IF NEW.Balance < 500 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Teen plan requires a minimum balance of 500';
+                END IF;
+
+            WHEN 'Adult' THEN
+                -- Adult: minimum balance of 1000
+                IF NEW.Balance < 1000 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Adult plan requires a minimum balance of 1000';
+                END IF;
+
+            WHEN 'Senior' THEN
+                -- Senior: minimum balance of 1000
+                IF NEW.Balance < 1000 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Senior plan requires a minimum balance of 1000';
+                END IF;
+
+            ELSE
+                -- If Plan is invalid, set minimum balance to 0
+                IF NEW.Balance < 0 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Balance cannot be negative';
+                END IF;
+        END CASE;
+    END IF;
+END$$
+
+DELIMITER ;
+
+DELIMITER $$
+
+CREATE TRIGGER EnforceSavingsAccountBalanceOnUpdate
+BEFORE UPDATE ON Account
+FOR EACH ROW
+BEGIN
+    IF NEW.Type = 'Savings' THEN
+        CASE NEW.Plan
+            WHEN 'Children' THEN
+                IF NEW.Balance < 0 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Balance cannot be negative for Children plan';
+                END IF;
+
+            WHEN 'Teen' THEN
+                -- Teen: minimum balance of 500
+                IF NEW.Balance < 500 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Teen plan requires a minimum balance of 500';
+                END IF;
+
+            WHEN 'Adult' THEN
+                -- Adult: minimum balance of 1000
+                IF NEW.Balance < 1000 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Adult plan requires a minimum balance of 1000';
+                END IF;
+
+            WHEN 'Senior' THEN
+                -- Senior: minimum balance of 1000
+                IF NEW.Balance < 1000 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Senior plan requires a minimum balance of 1000';
+                END IF;
+
+            ELSE
+                IF NEW.Balance < 0 THEN
+                    SIGNAL SQLSTATE '45000' 
+                    SET MESSAGE_TEXT = 'Balance cannot be negative';
+                END IF;
+        END CASE;
+    END IF;
 END$$
 
 DELIMITER ;
