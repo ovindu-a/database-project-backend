@@ -261,7 +261,8 @@ BEGIN
         ToAccount, 
         Date, 
         Value, 
-        Account.Type 
+        Account.Type,
+        Transaction.Type as Note
     FROM 
         Transaction 
     INNER JOIN 
@@ -290,7 +291,8 @@ BEGIN
         ToAccount, 
         Date, 
         Value, 
-        Account.Type 
+        Account.Type,
+        Transaction.Type as Note
     FROM 
         Transaction 
     INNER JOIN 
