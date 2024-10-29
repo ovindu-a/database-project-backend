@@ -18,13 +18,13 @@ exports.getAllCustomers = async (req, res) => {
 };
 
 exports.createCustomer = async (req, res) => {
-  const { Name, NIC, Address, username, password } = req.body;
+  const { Name, NIC, Address, username, password, CustomerType } = req.body;
 
   try {
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-    const customerId = await Customer.create(Name, NIC, Address, username, hashedPassword);
+    const customerId = await Customer.create(Name, NIC, Address, username, hashedPassword, CustomerType);
     res.status(201).json({ Customer_ID: customerId, Name, username });
   } catch (error) {
     res.status(500).json({ error: error.message });
