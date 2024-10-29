@@ -182,3 +182,63 @@ exports.getBriefInfoByCustomerId = async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 }
+
+// Search customer by email
+exports.getCustomerByEmail = async (req, res) => {
+  const { email } = req.params;
+  try {
+    const customer = await Customer.getByEmail(email);
+    if (customer) {
+      res.json(customer);
+    } else {
+      res.status(404).json({ message: 'Customer not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Search customer by username
+exports.getCustomerByUsername = async (req, res) => {
+  const { username } = req.params;
+  try {
+    const customer = await Customer.getByUsername(username);
+    if (customer) {
+      res.json(customer);
+    } else {
+      res.status(404).json({ message: 'Customer not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Search customer by account number
+exports.getCustomerByAccountNumber = async (req, res) => {
+  const { accountId } = req.params;
+  try {
+    const customer = await Account.getCustomerByAccountNumber(accountId);
+    if (customer) {
+      res.json(customer);
+    } else {
+      res.status(404).json({ message: 'Customer not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};
+
+// Search customer by NIC
+exports.getCustomerByNIC = async (req, res) => {
+  const { NIC } = req.params;
+  try {
+    const customer = await Customer.getByNIC(NIC);
+    if (customer) {
+      res.json(customer);
+    } else {
+      res.status(404).json({ message: 'Customer not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+};

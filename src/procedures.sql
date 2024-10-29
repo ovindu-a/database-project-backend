@@ -163,3 +163,70 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE ApplyMonthlyInterest()
+BEGIN
+    -- Temporary table to store the interest transactions with a primary key
+    CREATE TEMPORARY TABLE TempInterestTransactions (
+        Transaction_ID INT AUTO_INCREMENT PRIMARY KEY,
+        Account_ID INT,
+        InterestAmount DECIMAL(15, 2)
+    );
+
+    -- Update the balance for 'Children' plan (12% interest, no minimum balance)
+    UPDATE Account
+    SET Balance = Balance + (Balance * 0.12 / 100)
+    WHERE Type = 'Savings' AND Plan = 'Children' AND Account_ID IS NOT NULL;
+
+    -- Add entries to the temporary table for the 'Children' plan
+    INSERT INTO TempInterestTransactions (Account_ID, InterestAmount)
+    SELECT Account_ID, (Balance * 0.12 / 100)
+    FROM Account
+    WHERE Type = 'Savings' AND Plan = 'Children' AND Account_ID IS NOT NULL;
+
+    -- Update the balance for 'Teen' plan (11% interest, minimum balance 500)
+    UPDATE Account
+    SET Balance = Balance + (Balance * 0.11 / 100)
+    WHERE Type = 'Savings' AND Plan = 'Teen' AND Balance >= 500 AND Account_ID IS NOT NULL;
+
+    -- Add entries to the temporary table for the 'Teen' plan
+    INSERT INTO TempInterestTransactions (Account_ID, InterestAmount)
+    SELECT Account_ID, (Balance * 0.11 / 100)
+    FROM Account
+    WHERE Type = 'Savings' AND Plan = 'Teen' AND Balance >= 500 AND Account_ID IS NOT NULL;
+
+    -- Update the balance for 'Adult' plan (10% interest, minimum balance 1000)
+    UPDATE Account
+    SET Balance = Balance + (Balance * 0.10 / 100)
+    WHERE Type = 'Savings' AND Plan = 'Adult' AND Balance >= 1000 AND Account_ID IS NOT NULL;
+
+    -- Add entries to the temporary table for the 'Adult' plan
+    INSERT INTO TempInterestTransactions (Account_ID, InterestAmount)
+    SELECT Account_ID, (Balance * 0.10 / 100)
+    FROM Account
+    WHERE Type = 'Savings' AND Plan = 'Adult' AND Balance >= 1000 AND Account_ID IS NOT NULL;
+
+    -- Update the balance for 'Senior' plan (13% interest, minimum balance 1000)
+    UPDATE Account
+    SET Balance = Balance + (Balance * 0.13 / 100)
+    WHERE Type = 'Savings' AND Plan = 'Senior' AND Balance >= 1000 AND Account_ID IS NOT NULL;
+
+    -- Add entries to the temporary table for the 'Senior' plan
+    INSERT INTO TempInterestTransactions (Account_ID, InterestAmount)
+    SELECT Account_ID, (Balance * 0.13 / 100)
+    FROM Account
+    WHERE Type = 'Savings' AND Plan = 'Senior' AND Balance >= 1000 AND Account_ID IS NOT NULL;
+
+    -- Insert transactions from the temporary table into the Transaction table
+    INSERT INTO Transaction (FromAccount, ToAccount, Date, Value, Type)
+    SELECT NULL, Account_ID, CURDATE(), InterestAmount, 'Interest'
+    FROM TempInterestTransactions;
+
+    -- Drop the temporary table to free up resources
+    DROP TEMPORARY TABLE TempInterestTransactions;
+
+END$$
+
+DELIMITER ;

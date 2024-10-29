@@ -45,6 +45,7 @@ The system will support:
 
 git clone https://github.com/ovindu-a/database-project-backend.git
 
+
 ## **Installation**  
 
 ### **Prerequisites** 
@@ -77,6 +78,7 @@ DB_NAME=banking_system
 ```
 
 4. **To run in dev mode**
+
 ```
 npm run dev
 ```
@@ -272,8 +274,6 @@ These are the API endpoints for managing loan records in our system.
 #### Response:
 - **Success** (`201`): JSON object with details of the newly created quick loan.
 - **Error** (`500`): JSON object with error message.
-
-
 
 
 

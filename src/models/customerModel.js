@@ -11,11 +11,11 @@ const Customer = {
     }
   },
 
-  create: async (Name, NIC, Address, username, password) => {
+  create: async (Name, NIC, Address, username, password, CustomerType = 'Personal') => {
     try {
       const [result] = await db.query(
-        'INSERT INTO Customer (Name, NIC, Address, Username, Password) VALUES (?, ?, ?, ?, ?)',
-        [Name, NIC, Address, username, password]
+        'INSERT INTO Customer (Name, NIC, Address, Username, Password, CustomerType) VALUES (?, ?, ?, ?, ?, ?)',
+        [Name, NIC, Address, username, password, CustomerType]
       );
       return result.insertId;
     } catch (error) {
@@ -72,12 +72,42 @@ const Customer = {
 
   getById_opt: async (Customer_ID) => {
     try {
-      const [rows] = await db.query('SELECT Name,NIC,Address FROM CustomerView WHERE Customer_ID = ?', [Customer_ID]);
+      const [rows] = await db.query('SELECT Name,NIC,Address,CustomerType FROM CustomerView WHERE Customer_ID = ?', [Customer_ID]);
       return rows[0];
     } catch (error) {
       throw error;
     }
-  }
+  },
+
+    // Search customer by email
+    getByEmail: async (email) => {
+      try {
+        const [rows] = await db.query('SELECT * FROM Customer WHERE Email = ?', [email]);
+        return rows[0];
+      } catch (error) {
+        throw error;
+      }
+    },
+  
+    // Search customer by username
+    getByUsername: async (username) => {
+      try {
+        const [rows] = await db.query('SELECT * FROM Customer WHERE Username = ?', [username]);
+        return rows[0];
+      } catch (error) {
+        throw error;
+      }
+    }, 
+
+    // Search customer by NIC
+    getByNIC: async (NIC) => {
+      try {
+        const [rows] = await db.query('SELECT * FROM Customer WHERE NIC = ?', [NIC]);
+        return rows[0];
+      } catch (error) {
+        throw error;
+      }
+    },
 };
 
 module.exports = Customer;

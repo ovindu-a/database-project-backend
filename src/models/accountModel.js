@@ -108,6 +108,21 @@ const Account = {
     } catch (error) {
       throw error;
     }
+  },
+
+  // Get customer by account number
+  getCustomerByAccountNumber: async (accountId) => {
+    try {
+      const [rows] = await db.query(
+        `SELECT c.* FROM Customer c 
+          JOIN Account a ON c.Customer_ID = a.Customer_ID 
+          WHERE a.Account_ID = ?`,
+        [accountId]
+      );
+      return rows[0];
+    } catch (error) {
+      throw error;
+    }
   }
 };
 
