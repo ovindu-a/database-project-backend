@@ -332,3 +332,41 @@ END$$
 
 DELIMITER ;
 
+DELIMITER $$
+
+CREATE PROCEDURE UpdateAccountBalances(
+    IN from_account INT,
+    IN to_account INT,
+    IN transaction_value DECIMAL(10, 2)
+)
+proc_block:BEGIN
+    START TRANSACTION;
+
+    IF from_account IS NOT NULL THEN
+        UPDATE Account
+        SET Balance = Balance - transaction_value
+        WHERE Account_ID = from_account;
+
+        IF ROW_COUNT() = 0 THEN
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to deduct balance from from_account';
+            LEAVE proc_block;
+        END IF;
+    END IF;
+
+    IF to_account IS NOT NULL THEN
+        UPDATE Account
+        SET Balance = Balance + transaction_value
+        WHERE Account_ID = to_account;
+
+        IF ROW_COUNT() = 0 THEN
+            ROLLBACK;
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Failed to add balance to to_account';
+            LEAVE proc_block;
+        END IF;
+    END IF;
+
+    COMMIT;
+END$$
+
+DELIMITER ;
