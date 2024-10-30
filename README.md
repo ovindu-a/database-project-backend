@@ -393,6 +393,75 @@ banking-system/
     - `loans`: Loan details.
     - `fds`: Fixed deposit details (only ID and initial amount).
 
+### API Endpoints for Employee Management
+
+### 1. `getAllEmployees`
+- **Endpoint**: GET `https://ourbankURL/api/employees/`
+- **Description**: Fetches all employees from the database.
+- **Response**:
+  - Returns a JSON array of all employees.
+  - Sends a `500` status with an error message if an error occurs.
+
+### 2. `createEmployee`
+- **Endpoint**: POST `https://ourbankURL/api/employees/`
+- **Description**: Creates a new employee with the provided details.
+- **Request Body**:
+  - `Branch_ID`: The ID of the branch where the employee works.
+  - `Name`: The name of the employee.
+  - `Username`: The employee’s username.
+  - `Password`: The employee’s password (hashed before storing).
+- **Response**:
+  - Returns the ID and details of the newly created employee upon success.
+  - Sends a `500` status with an error message if the employee creation fails.
+
+### 3. `getEmployeeById`
+- **Endpoint**: GET `https://ourbankURL/api/employees/:id`
+- **Description**: Retrieves a specific employee by their ID.
+- **Response**:
+  - Returns the employee's details if found.
+  - Sends a `404` status with an 'Employee not found' message if the employee does not exist.
+
+### 4. `updateEmployee`
+- **Endpoint**: PUT `https://ourbankURL/api/employees/:id`
+- **Description**: Updates details for a specific employee.
+- **Request Body**:
+  - Contains the updated employee details (e.g., name, branch ID).
+- **Response**:
+  - Returns a success message upon successful update.
+  - Sends a `404` status with an 'Employee not found' message if the employee does not exist.
+
+### 5. `deleteEmployee`
+- **Endpoint**: DELETE `https://ourbankURL/api/employees/:id`
+- **Description**: Deletes a specific employee by their ID.
+- **Response**:
+  - Returns a success message upon successful deletion.
+  - Sends a `404` status with an 'Employee not found' message if the employee does not exist.
+
+### 6. `loginEmployee`
+- **Endpoint**: POST `https://ourbankURL/api/employees/login`
+- **Description**: Authenticates an employee using their username and password.
+- **Request Body**:
+  - `Username`: The employee’s username.
+  - `Password`: The employee’s password.
+- **Features**:
+  - Validates the password against the stored hashed password.
+  - Generates an OTP and sends it to the employee’s registered email.
+- **Response**:
+  - Returns a message indicating OTP sent and success message upon successful login.
+  - Sends a `404` status with 'Employee not found' if the username does not exist.
+  - Sends a `401` status with 'Invalid username or password' if the password is incorrect.
+
+### 7. `verifyOtp`
+- **Endpoint**: POST `https://ourbankURL/api/employees/verifyOtp`
+- **Description**: Verifies the OTP sent to the employee’s email during login.
+- **Request Body**:
+  - `Employee_ID`: The ID of the employee.
+  - `OTP`: The OTP provided by the employee.
+- **Response**:
+  - Generates a JWT token and sets it in a secure HTTP-only cookie upon successful OTP verification.
+  - Sends a `401` status with 'Invalid OTP' if the OTP is incorrect or expired.
+
+
 
 ### API Endpoints for FD Management
 Here are the endpoints available for managing Fixed Deposit (FD) records in the system.
