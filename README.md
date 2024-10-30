@@ -394,6 +394,86 @@ banking-system/
     - `fds`: Fixed deposit details (only ID and initial amount).
 
 
+
+### API Endpoints for Employee Management
+These are the API endpoints for managing employee records, including authentication with OTP and JWT for security.
+
+### 1. Get All Employees
+- **Endpoint**: GET `https://ourbankURL/api/employees/`
+- **Description**: Retrieves a list of all employee records from the database.
+#### Response:
+- **Success** (`200`): JSON array containing all employee records.
+- **Error** (`500`): JSON object with error message.
+
+### 2. Create a New Employee
+- **Endpoint**: POST `https://ourbankURL/api/employees/`
+- **Description**: Creates a new employee record with details provided in the request body.
+#### Request Body:
+- `Branch_ID`: ID of the branch where the employee works.
+- `name`: Name of the employee.
+- `username`: Username for the employee login.
+- `password`: Plaintext password to be hashed for security.
+#### Response:
+- **Success** (`201`): JSON object with details of the newly created employee.
+- **Error** (`500`): JSON object with error message.
+
+### 3. Get Employee by ID
+- **Endpoint**: GET `https://ourbankURL/api/employees/:id`
+- **Description**: Retrieves a specific employee record by its ID.
+#### Path Parameter:
+  - `id` (required): The unique ID of the employee.
+#### Response:
+- **Success** (`200`): JSON object containing the employee details.
+- **Not Found** (`404`): JSON message indicating "Employee not found."
+- **Error** (`500`): JSON object with error message.
+
+### 4. Update Employee by ID
+- **Endpoint**: PUT `https://ourbankURL/api/employees/:id`
+- **Description**: Updates an existing employee record by its ID with details provided in the request body.
+#### Path Parameter:
+  - `id` (required): The unique ID of the employee to update.
+#### Request Body:
+- JSON object containing the fields to update.
+#### Response:
+- **Success** (`200`): JSON message indicating "Employee updated successfully."
+- **Not Found** (`404`): JSON message indicating "Employee not found."
+- **Error** (`500`): JSON object with error message.
+
+### 5. Delete Employee by ID
+- **Endpoint**: DELETE `https://ourbankURL/api/employees/:id`
+- **Description**: Deletes a specific employee record by its ID.
+#### Path Parameter:
+  - `id` (required): The unique ID of the employee to delete.
+#### Response:
+- **Success** (`200`): JSON message indicating "Employee deleted successfully."
+- **Not Found** (`404`): JSON message indicating "Employee not found."
+- **Error** (`500`): JSON object with error message.
+
+### 6. Login Employee
+- **Endpoint**: POST `https://ourbankURL/api/employees/login`
+- **Description**: Authenticates an employee by verifying their username and password, and sends an OTP to their email if credentials are correct.
+#### Request Body:
+- `username`: Username of the employee.
+- `password`: Plaintext password for verification.
+#### Response:
+- **Success** (`200`): JSON message indicating "Login successful, OTP sent to your email" along with the `Employee_ID`.
+- **Not Found** (`404`): JSON message indicating "Employee not found."
+- **Unauthorized** (`401`): JSON message indicating "Invalid username or password."
+- **Error** (`500`): JSON object with error message.
+
+### 7. Verify OTP
+- **Endpoint**: POST `https://ourbankURL/api/employees/verify-otp`
+- **Description**: Verifies the OTP sent to the employee’s email and, if valid, issues a JWT token to log the user in.
+#### Request Body:
+- `Employee_ID`: The unique ID of the employee.
+- `otp`: OTP sent to the employee's email.
+#### Response:
+- **Success** (`200`): JSON message indicating "OTP verified successfully, you are logged in," with the `Employee_ID`. A JWT token is also set as a cookie.
+- **Unauthorized** (`401`): JSON message indicating "Invalid OTP."
+- **Error** (`500`): JSON object with error message.
+
+
+
 ### API Endpoints for FD Management
 Here are the endpoints available for managing Fixed Deposit (FD) records in the system.
 
@@ -530,7 +610,9 @@ These are the API endpoints for managing loan records in our system.
 #### Response:
 - **Success** (`201`): JSON object with details of the newly created quick loan.
 - **Error** (`500`): JSON object with error message.
-- 
+
+
+
 ### API Endpoints for Transaction Management
 
 These are descriptions of each API endpoint for managing transaction records.
@@ -776,4 +858,123 @@ These are descriptions of each API endpoint for managing transaction records.
 - **Not Found** (`404`): JSON message indicating "Loan application not found."
 - **Error** (`500`): JSON object with error message.
 
- 
+
+
+### API Endpoints for Loan Installment Management
+These are the API endpoints for managing loan installment records in our banking system.
+
+### 1. Get All Loan Installments
+- **Endpoint**: GET `https://ourbankURL/api/loanInstallments/`
+- **Description**: Retrieves a list of all loan installment records from the database.
+#### Response:
+- **Success** (`200`): JSON array containing all loan installment records.
+- **Error** (`500`): JSON object with error message.
+
+### 2. Create a New Loan Installment
+- **Endpoint**: POST `https://ourbankURL/api/loanInstallments/`
+- **Description**: Creates a new loan installment record with details provided in the request body.
+#### Request Body:
+- `Loan_ID`: ID of the loan associated with the installment.
+- `Branch_ID`: ID of the branch handling the installment.
+- `Transaction_ID`: ID of the transaction related to the installment.
+- `DueDate`: Due date of the installment.
+- `Value`: Amount of the installment.
+#### Response:
+- **Success** (`201`): JSON object with details of the newly created installment.
+- **Error** (`500`): JSON object with error message.
+
+### 3. Get Loan Installment by ID
+- **Endpoint**: GET `https://ourbankURL/api/loanInstallments/:id`
+- **Description**: Retrieves a specific loan installment record by its ID.
+#### Path Parameter:
+  - `id` (required): The unique ID of the loan installment.
+#### Response:
+- **Success** (`200`): JSON object containing the loan installment details.
+- **Not Found** (`404`): JSON message indicating "Loan Installment not found."
+- **Error** (`500`): JSON object with error message.
+
+### 4. Update Loan Installment by ID
+- **Endpoint**: PUT `https://ourbankURL/api/loanInstallments/:id`
+- **Description**: Updates an existing loan installment record by its ID with details provided in the request body.
+#### Path Parameter:
+  - `id` (required): The unique ID of the loan installment to update.
+#### Request Body:
+- JSON object containing the fields to update
+#### Response:
+- **Success** (`200`): JSON message indicating "Loan Installment updated successfully."
+- **Not Found** (`404`): JSON message indicating "Loan Installment not found."
+- **Error** (`500`): JSON object with error message.
+
+### 5. Delete Loan Installment by ID
+- **Endpoint**: DELETE `https://ourbankURL/api/loanInstallments/:id`
+- **Description**: Deletes a specific loan installment record by its ID.
+#### Path Parameter:
+  - `id` (required): The unique ID of the loan installment to delete.
+#### Response:
+- **Success** (`200`): JSON message indicating "Loan Installment deleted successfully."
+- **Not Found** (`404`): JSON message indicating "Loan Installment not found."
+- **Error** (`500`): JSON object with error message.
+
+### 6. Get Loan Installments by Loan ID
+- **Endpoint**: GET `https://ourbankURL/api/loanInstallments/loan/:Loan_ID`
+- **Description**: Retrieves all loan installments associated with a specific loan ID.
+#### Path Parameter:
+  - `Loan_ID` (required): The unique ID of the loan for which installments are retrieved.
+#### Response:
+- **Success** (`200`): JSON array containing loan installments for the specified loan.
+- **Not Found** (`404`): JSON message indicating "No loan installments found for this loan."
+- **Error** (`500`): JSON object with error message.
+
+### 7. Get Late Loan Installments by Branch ID
+- **Endpoint**: GET `https://ourbankURL/api/loanInstallments/late/:id`
+- **Description**: Retrieves loan installments that are overdue for a specific branch.
+#### Path Parameter:
+  - `id` (required): The unique ID of the branch to filter late loan installments.
+#### Response:
+- **Success** (`200`): JSON array containing late loan installments for the specified branch.
+- **Error** (`500`): JSON object with error message.
+
+### 8. Make Installment Payment
+- **Endpoint**: POST `https://ourbankURL/api/loanInstallments/pay/:installmentId`
+- **Description**: Processes a payment for a specific loan installment.
+#### Path Parameter:
+  - `installmentId` (required): The unique ID of the installment being paid.
+#### Request Body:
+- `accountId`: ID of the account making the payment.
+- `amount`: Amount being paid toward the installment.
+#### Response:
+- **Success** (`200`): JSON message indicating "Installment payment made successfully."
+- **Not Found** (`404`): JSON message indicating "Installment not found or payment failed."
+- **Bad Request** (`400`): JSON message indicating "Installment already paid."
+- **Error** (`500`): JSON object with error message.
+
+
+
+### API Endpoints for Analysis Management
+These are the API endpoints for retrieving analytical data about accounts, customers, and distributions in the banking system.
+
+
+### 1. Get Account Summary by Branch
+- **Endpoint**: GET `https://ourbankURL/api/analysis/branch/:branchId`
+- **Description**: Retrieves a summary of accounts for a specified branch.
+#### Path Parameter:
+  - `branchId` (required): The unique ID of the branch to retrieve account summary.
+#### Response:
+- **Success** (`200`): JSON object containing the account summary data for the branch.
+- **Error** (`500`): JSON object with error message.
+
+### 2. Get Customer Distribution
+- **Endpoint**: GET `https://ourbankURL/api/analysis/customer-distribution`
+- **Description**: Retrieves the distribution of customers across various segments.
+#### Response:
+- **Success** (`200`): JSON array containing the customer distribution data.
+- **Error** (`500`): JSON object with error message.
+
+### 3. Get Customer Account Summary
+- **Endpoint**: GET `https://ourbankURL/api/analysis/customer-account-summary`
+- **Description**: Provides a summary of accounts held by each customer.
+#### Response:
+- **Success** (`200`): JSON array containing the account summary for each customer.
+- **Error** (`500`): JSON object with error message.
+
+
