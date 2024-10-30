@@ -370,3 +370,30 @@ proc_block:BEGIN
 END$$
 
 DELIMITER ;
+
+DELIMITER $$
+
+CREATE PROCEDURE ApplyFDInterestMonthly()
+BEGIN
+    DECLARE annualInterestRate DECIMAL(5, 2) DEFAULT 10.0; 
+    DECLARE monthlyInterestRate DECIMAL(5, 4);
+
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        ROLLBACK;
+    END;
+
+    START TRANSACTION;
+
+    SET monthlyInterestRate = annualInterestRate / 12 / 100;
+
+
+    INSERT INTO Transaction (FromAccount, ToAccount, Date, Value, Type)
+    SELECT NULL, fd.Account_ID, CURDATE(), (fd.InitialAmount * monthlyInterestRate), 'FD Interest'
+    FROM FD fd
+    WHERE fd.Account_ID IS NOT NULL;
+
+    COMMIT;
+END$$
+
+DELIMITER ;
